@@ -99,7 +99,22 @@ qsort (n:ns) = qsort smaller ++ [n] ++ qsort bigger
     where smaller = [s | s <- ns, s <= n]
           bigger  = [b | b <- ns, b > n]
 
+-- random testing
+
 pythag n = [(x,y,z) | x <- [1..n],
                       y <- [x..n],
                       z <- [y..n],
                       x^2 + y^2 == z^2]
+
+-- fibonacci with recursion, takes an Integer n, the fibonacci number to extract.
+-- Returns the number
+-- Uses recursion, to basically:
+-- Checks if n is 0 or 1, the two base cases of fib.
+-- Otherwise it calculates the fib number of n-1+n-2 which will in turn initiate recursion down to the base cases
+-- Then it will get the base case values and finish the calculation where it started on otherwise.
+fib :: Integer -> Integer 
+fib n 
+    | n < 0 = error "Neg fib not possible"
+    | n == 0 = 0
+    | n == 1 = 1
+    | otherwise = fib (n-1) + fib (n-2)
