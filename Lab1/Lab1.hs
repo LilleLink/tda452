@@ -1,7 +1,7 @@
 {- Lab 1
-   Date: 
-   Authors:
-   Lab group:
+   Date: 2021-10-30
+   Authors: Axel Larsson and Simon Engström
+   Lab group: TODO: fix this
  -}
 --------------------------------------------
 power :: Integer -> Integer -> Integer
@@ -46,9 +46,12 @@ power2 n k
 
 -- D ------------------------
 {- 
-
-<Describe your test cases here>
-
+    Tests:
+    1. 0 to the power of any integer != 0 should always be 0.
+    2. 1 to the power of any integer should always be 1.
+    3. Any integer raised to the power of 0 should always be 1.
+    4. Negative exponents should cause an error.
+    5. Functions should only take integers. 
  -}
 
 -- 
