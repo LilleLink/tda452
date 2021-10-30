@@ -8,7 +8,7 @@ power :: Integer -> Integer -> Integer
 power n k
    | k < 0 = error "power: negative argument"
 power n 0  = 1
-power n k  = n * power n (k-1)
+power n k  = n * power n (k - 1)
 
 -- A ------------------------
 -- stepsPower n k gives the number of steps that
@@ -41,8 +41,8 @@ power2 :: Integer -> Integer -> Integer
 power2 n k
    | k < 0 = error "Not defined for negative exponents"
    | k == 0 = 1
-   | even k = power2 (n*n) (k `div` 2)
-   | odd k = n * power2 n (k-1)
+   | even k = power2 (n * n) (k `div` 2)
+   | odd k = n * power2 n (k - 1)
 
 -- D ------------------------
 {- 
