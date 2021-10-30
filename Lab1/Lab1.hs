@@ -25,7 +25,7 @@ power1 :: Integer -> Integer -> Integer
 power1 n k 
    | k == 0 = 1
    | k < 0 = error "Power with negative exponents not supported"
-   | k > 0 = product myList where myList = [n | _ <- [1..k]]
+   | otherwise = product myList where myList = [n | _ <- [1..k]]
 
 -- Why non exhaustive?
 -- Could do take and repeat instead of replicate, but it corrects to replicate
