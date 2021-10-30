@@ -15,17 +15,17 @@ power n k  = n * power n (k-1)
 -- power n k takes to compute
 
 stepsPower :: Integer -> Integer -> Integer
-stepsPower n k = k - 1
+stepsPower _ k = k - 1
 
 
--- B -------------------------
+-- B ------------------------
 -- power1
 
 power1 :: Integer -> Integer -> Integer
-power1 n k | k == 0 = 1
-           | k < 0 = error " Power with negative exponents not supported"
-           | k > 0 = product myList
-               where myList = replicate (fromInteger k) n
+power1 n k 
+   | k == 0 = 1
+   | k < 0 = error "Power with negative exponents not supported"
+   | k > 0 = product myList where myList = [n | _ <- [1..k]]
 
 -- Why non exhaustive?
 -- Could do take and repeat instead of replicate, but it corrects to replicate
@@ -34,7 +34,7 @@ power1 n k | k == 0 = 1
 --prop_power1 n k = n^k' == power1 n k'
    --where k' = abs k
 
--- C -------------------------
+-- C ------------------------
 -- power2
 
 power2 :: Integer -> Integer -> Integer 
@@ -44,7 +44,7 @@ power2 n k
    | even k = power2 (n*n) (k `div` 2)
    | odd k = n * power2 n (k-1)
 
--- D -------------------------
+-- D ------------------------
 {- 
 
 <Describe your test cases here>
