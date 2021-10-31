@@ -15,7 +15,7 @@ power n k  = n * power n (k - 1)
 -- power n k takes to compute
 
 stepsPower :: Integer -> Integer -> Integer
-stepsPower _ k = k - 1
+stepsPower _ k = k + 1
 
 
 -- B ------------------------
