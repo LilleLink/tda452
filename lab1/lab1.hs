@@ -29,13 +29,6 @@ power1 n k
    | k < 0 = error "power: negative argument"
    | otherwise = product myList where myList = [n | _ <- [1..k]]
 
--- Why non exhaustive?
--- Could do take and repeat instead of replicate, but it corrects to replicate
-
---prop_power1 :: Integer -> Int -> Bool
---prop_power1 n k = n^k' == power1 n k'
-   --where k' = abs k
-
 -- C ------------------------
 -- power2
 
@@ -49,16 +42,19 @@ power2 n k
 -- D ------------------------
 {- 
     Tests:
-    Mathematical tests to make sure the function outputs expected values for supported inputs:
+    Mathematical tests to make sure the function outputs expected 
+    values for supported inputs:
     1. 0 to the power of any integer >0 should always be 0.
     2. 1 to the power of any positive integer should always be 1.
     3. Any integer raised to the power of 0 should always be 1.
-    Program tests for making sure the functions handle unsupported types or values correctly:
+    Program tests for making sure the functions handle unsupported types 
+    or values correctly:
     4. Negative exponents should cause an error - Since its not supported
     5. Functions should only take integers - to prevent type errors
  -}
 
--- Tests that the power functions return the same value for some n, k. Will throw an error for k<0
+-- Tests that the power functions return the same value for some n, k. 
+-- Will throw an error for k<0
 prop_powers :: Integer -> Integer -> Bool
 prop_powers n k = (power n k == power1 n k) && (power n k == power2 n k)
 
@@ -66,7 +62,8 @@ prop_powers n k = (power n k == power1 n k) && (power n k == power2 n k)
 powerTest :: Integer -> Bool
 powerTest n = prop_powers n 0 && prop_powers 1 n && prop_powers 0 n
 
--- Tests that the power functions returns the same value for some n, k. Takes absolute value of k to avoid errors.
+-- Tests that the power functions returns the same value for some n, k.
+-- Takes absolute value of k to avoid errors.
 prop_powers' :: Integer -> Integer -> Bool
 prop_powers' n k = (power n k' == power1 n k') && (power n k' == power2 n k')
    where k' = abs k
