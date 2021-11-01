@@ -1,7 +1,7 @@
 {- Lab 1
    Date: 2021-10-30
    Authors: Axel Larsson and Simon Engström
-   Lab group: TODO: fix this
+   Lab group: 12
  -}
 --------------------------------------------
 import Test.QuickCheck
