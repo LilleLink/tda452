@@ -4,6 +4,8 @@
    Lab group: TODO: fix this
  -}
 --------------------------------------------
+import Test.QuickCheck
+--------------------------------------------
 power :: Integer -> Integer -> Integer
 power n k
    | k < 0 = error "power: negative argument"
@@ -22,9 +24,9 @@ stepsPower _ k = k + 1
 -- power1
 
 power1 :: Integer -> Integer -> Integer
-power1 n k 
+power1 n k
    | k == 0 = 1
-   | k < 0 = error "Power with negative exponents not supported"
+   | k < 0 = error "power: negative argument"
    | otherwise = product myList where myList = [n | _ <- [1..k]]
 
 -- Why non exhaustive?
@@ -37,9 +39,9 @@ power1 n k
 -- C ------------------------
 -- power2
 
-power2 :: Integer -> Integer -> Integer 
+power2 :: Integer -> Integer -> Integer
 power2 n k
-   | k < 0 = error "Not defined for negative exponents"
+   | k < 0 = error "power: negative argument"
    | k == 0 = 1
    | even k = power2 (n * n) (k `div` 2)
    | odd k = n * power2 n (k - 1)
@@ -47,19 +49,24 @@ power2 n k
 -- D ------------------------
 {- 
     Tests:
-    1. 0 to the power of any integer != 0 should always be 0.
-    2. 1 to the power of any integer should always be 1.
+    Mathematical tests to make sure the function outputs expected values for supported inputs:
+    1. 0 to the power of any integer >0 should always be 0.
+    2. 1 to the power of any positive integer should always be 1.
     3. Any integer raised to the power of 0 should always be 1.
-    4. Negative exponents should cause an error.
-    5. Functions should only take integers. 
+    Program tests for making sure the functions handle unsupported types or values correctly:
+    4. Negative exponents should cause an error - Since its not supported
+    5. Functions should only take integers - to prevent type errors
  -}
 
--- 
-prop_powers = undefined
+-- Tests that the power functions return the same value for some n, k. Will throw an error for k<0
+prop_powers :: Integer -> Integer -> Bool
+prop_powers n k = (power n k == power1 n k) && (power n k == power2 n k)
 
---
-powerTest :: Bool
-powerTest = undefined
+-- Tests cases 1, 2, 3. Works only for n >= 0
+powerTest :: Integer -> Bool
+powerTest n = prop_powers n 0 && prop_powers 1 n && prop_powers 0 n
 
---
-prop_powers' = undefined
+-- Tests that the power functions returns the same value for some n, k. Takes absolute value of k to avoid errors.
+prop_powers' :: Integer -> Integer -> Bool
+prop_powers' n k = (power n k' == power1 n k') && (power n k' == power2 n k')
+   where k' = abs k
