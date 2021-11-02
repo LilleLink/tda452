@@ -130,6 +130,4 @@ splitHand'' h = split h Empty Empty
 -- and the blacks as-is. If it is a black card we call split again,
 -- but the other way around, adding c to the blacks parameter.
 
-
-
-
+-- ll this
