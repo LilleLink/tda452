@@ -1,5 +1,6 @@
 import System.Random(randomRs,mkStdGen)
 import Test.QuickCheck
+
 -- The Swedish Cake problem
 -- Difficulty 🌶🌶
 
@@ -48,45 +49,45 @@ totalSales n
     | otherwise = error "Cannot get sales of negative weeks"
 
 -- (2) highest sale in the first n weeks?
-highestSaleNWeeks :: Int -> Integer
-highestSaleNWeeks n
+highestSales :: Int -> Integer
+highestSales n
     | n == 0 = sales n
-    | n > 0 && sales n > highestSaleNWeeks (n - 1) = sales n
-    | otherwise = highestSaleNWeeks (n - 1)
+    | n > 0 && sales n > highestSales (n - 1) = sales n
+    | otherwise = highestSales (n - 1)
 -- This is complexity n! .. yikes
-highestSaleNWeeks' :: Int -> Integer
-highestSaleNWeeks' n = accumulator n (sales n)
+highestSales' :: Int -> Integer
+highestSales' n = accumulator n (sales n)
     where
     accumulator n h
-        | n == -1 = h
+        | n < 0 = h
         | sales n > h = accumulator (n - 1) (sales n)
         | otherwise = accumulator (n - 1) h
 -- This is complexity O(n) which is significantly better
 
 -- (3) number of weeks with sales less than 100
 --     in the first n weeks. 
-lowestSaleWeeks :: Int -> Integer
-lowestSaleWeeks n
+lowestSales :: Int -> Integer
+lowestSales n
     | n == 0 = toInteger (fromEnum (sales n < 100))
-    | sales n < 100 = 1 + lowestSaleWeeks (n - 1)
-    | otherwise = lowestSaleWeeks (n - 1)
+    | sales n < 100 = 1 + lowestSales (n - 1)
+    | otherwise = lowestSales (n - 1)
 -- (4) Define each of these using list comprehensions
 --     instead of recursion
 totalSales' :: Int -> Integer
-totalSales' n = sum [sales w | w <- [1..n]]
+totalSales' n = sum [sales w | w <- [0..n]]
 
-highestSaleNWeeks'' :: Int -> Integer
-highestSaleNWeeks'' n = maximum [sales w | w <- [1..n]]
+highestSales'' :: Int -> Integer
+highestSales'' n = maximum [sales w | w <- [0..n]]
 
-lowestSaleWeeks' :: Int -> Integer
-lowestSaleWeeks' n = toInteger(length [n | n <- [sales w | w <- [1..n]]
+lowestSales' :: Int -> Integer
+lowestSales' n = toInteger(length [n | n <- [sales w | w <- [0..n]]
     , n < 100])
 
 -- Using recursion, indirectly or in a helper function:
 -- Difficulty 🌶🌶️
 -- (4) Average sales up to and including week n?
 averageSales :: Int -> Float
-averageSales n = fromIntegral(accumulateTotal n) / fromIntegral n
+averageSales n = fromIntegral(accumulateTotal n) / fromIntegral (n + 1)
     where
     accumulateTotal n
         | n == 0 = sales 0
@@ -112,10 +113,18 @@ prop_bestWeeks :: Int -> Bool
 prop_bestWeeks w = bestWeeks w' == [toInteger n | n <- [0..w'], sales n > 900]
     where w' = abs w
 
+-- Props to check if list comprehension/recursions match (not part of exercise)
 
+prop_totalSales :: Int -> Bool 
+prop_totalSales n = totalSales n == totalSales' n
 
+prop_highestSales :: Int -> Bool
+prop_highestSales n = highestSales' n == highestSales'' n
 
+prop_lowestSales :: Int -> Bool 
+prop_lowestSales n = lowestSales n == lowestSales' n
 
-
-
-
+prop_recursions :: Int -> Bool 
+prop_recursions n = prop_totalSales n' && prop_highestSales n' && 
+    prop_lowestSales n'
+    where n' = abs n
