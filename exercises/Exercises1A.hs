@@ -37,11 +37,24 @@ sales i = randomRs (0,1000) (mkStdGen i) !! i
            -- The definition is not important!
 
 
--- Difficulty 🌶️Give recursive definitions of functions
+-- Difficulty 🌶️ Give recursive definitions of functions
 -- which compute:
 
 -- (1) total sales for the first n weeks?
+totalSales :: Int -> Integer
+totalSales n 
+    | n == 0 = sales 0
+    | n > 0 = sales n + totalSales (n - 1)
+    | otherwise = error "Cannot get sales of negative weeks"
+
 -- (2) highest sale in the first n weeks?
+highestSaleNWeeks :: Int -> Integer
+highestSaleNWeeks n 
+    | n == 0 = sales n
+    | n > 0 && sales n > highestSaleNWeeks (n - 1) = sales n
+    | n > 0 && sales n < highestSaleNWeeks (n - 1) = highestSaleNWeeks (n - 1)
+    | otherwise = error "Lol cant find bror"
+
 -- (3) number of weeks with sales less than 100
 --     in the first n weeks. 
 -- (4) Define each of these using list comprehensions
