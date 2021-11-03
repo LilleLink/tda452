@@ -4,7 +4,7 @@ import System.Random(randomRs,mkStdGen)
 -- Difficulty 🌶🌶
 
 -- A cake is left in the common room for everyone to enjoy.
--- People never take more than one piece, but obej the
+-- People never take more than one piece, but obey the
 -- following protocol:
 
 -- If there is more than 150g then they take a 100g slice.
@@ -16,6 +16,13 @@ import System.Random(randomRs,mkStdGen)
 -- weighs x grams.
 -- Try to write the type of the function before you start. 
 
+-- Takes how much cake there is and returns how many ppl will get cek
+getCakePeople :: Float -> Int
+getCakePeople cakegrams
+    | cakegrams < 0 = error "ANTIMATTER DETECTED"
+    | cakegrams <= 30 = 1
+    | cakegrams >= 150 = 1 + getCakePeople (cakegrams - 100)
+    | otherwise = 1 + getCakePeople (cakegrams / 2) 
 -------------------------------------------------------
 -- This questions is about the weekly sales from a shop,
 -- where week numbers start at zero. 
