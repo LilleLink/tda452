@@ -1,5 +1,5 @@
 import System.Random(randomRs,mkStdGen)
-
+import Test.QuickCheck
 -- The Swedish Cake problem
 -- Difficulty 🌶🌶
 
@@ -58,7 +58,7 @@ highestSaleNWeeks' :: Int -> Integer
 highestSaleNWeeks' n = accumulator n (sales n)
     where
     accumulator n h
-        | n == 0 = h
+        | n == -1 = h
         | sales n > h = accumulator (n - 1) (sales n)
         | otherwise = accumulator (n - 1) h
 -- This is complexity O(n) which is significantly better
@@ -98,11 +98,19 @@ averageSales n = fromIntegral(accumulateTotal n) / fromIntegral n
 -- sales in the first n weeks.
 -- Since there may be more than one week with the best sales,
 -- your answer should be a list of weeks.
+bestWeeks :: Int -> [Integer]
+bestWeeks n
+    | n == 0 && sales n > 900 = [toInteger n]
+    | n == 0 && sales n < 900 = []
+    | sales n > 900 = bestWeeks (n - 1) ++ [toInteger n]
+    | otherwise = bestWeeks (n - 1)
 
 -- (6) Write a quickcheck property for (5)
 -- which checks that you included all the right weeks
 -- in your answer, and none of the wrong ones!
-
+prop_bestWeeks :: Int -> Bool 
+prop_bestWeeks w = bestWeeks w' == [toInteger n | n <- [0..w'], sales n > 900]
+    where w' = abs w
 
 
 
