@@ -18,7 +18,7 @@ sizeSteps = [size hand2,
     2]
 
 -- A1
--- Returns a string, presenting the cards of a given hand in a nice format
+-- Returns a string, presenting the cards of a given hand in a nice format.
 display :: Hand -> String
 display Empty = ""
 display (Add c h) = displayCard c ++ "\n" ++ display h
