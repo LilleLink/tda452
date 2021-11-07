@@ -81,3 +81,4 @@ powerTest = prop_powers 0 2 && prop_powers 2 0
 prop_powers' :: Integer -> Integer -> Bool
 prop_powers' n k = prop_powers n k'
    where k' = abs k
+
