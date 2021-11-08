@@ -76,6 +76,10 @@ powerTest = prop_powers 0 2 && prop_powers 2 0
    && prop_powers 1 50 && prop_powers 2 100
    && prop_powers (-2) 3 && prop_powers (-2) 4
 
+-- Redifned after feedback THIS IS NOT SUBMITTED
+powerTest' :: Bool 
+powerTest' = and [prop_powers' n k | (n,k) <- [(0,2),(2,0),(1,50),(2,100),(-2,3),(-2,4)]]
+
 -- Tests that the power functions returns the same value for some n, k.
 -- Takes absolute value of k to avoid errors.
 prop_powers' :: Integer -> Integer -> Bool
