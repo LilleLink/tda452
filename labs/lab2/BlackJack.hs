@@ -7,8 +7,8 @@ import Test.QuickCheck
 hand2 :: Hand
 hand2 = Add (Card (Numeric 2) Hearts)
         (Add (Card Jack Spades) Empty)
--- Every itemi of the sizeSteps array should be equal to 2.
-        
+
+-- Every item in the sizeSteps array should be equal to 2.
 sizeSteps :: [Integer]
 sizeSteps = [size hand2,
     size    (Add (Card (Numeric 2) Hearts)
@@ -30,7 +30,8 @@ displayCard (Card (Numeric i) s) = show i ++ " of " ++ show s
 displayCard (Card r s) = show r ++ " of " ++ show s
 
 -- A2
--- We chose to use option 2.
+-- We chose to use option 1.
+
 -- Calculates the total value of a given hand with the given value to 
 -- represent aces.
 value :: Hand -> Integer
@@ -39,6 +40,7 @@ value h
     | otherwise = init - (numberOfAces h * 10)
         where init = initialValue h
 
+-- Returns the value of a given hand, using the value 11 for aces.
 initialValue :: Hand -> Integer
 initialValue Empty = 0
 initialValue (Add c h) = valueRank (rank c) + initialValue h
@@ -47,6 +49,7 @@ initialValue (Add c h) = valueRank (rank c) + initialValue h
         valueRank Ace = 11
         valueRank _ = 10
 
+-- Returns the number of aces in a given hand.
 numberOfAces :: Hand -> Integer
 numberOfAces Empty = 0
 numberOfAces (Add c h)
