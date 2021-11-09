@@ -18,7 +18,7 @@ sizeSteps = [size hand2,
     2]
 
 -- A1
--- Returns a string, presenting the cards of a given hand in a nice format.
+-- Returns a string representing the given hand in a nice format.
 display :: Hand -> String
 display Empty = ""
 display (Add c h) = displayCard c ++ "\n" ++ display h
@@ -32,8 +32,7 @@ displayCard (Card r s) = show r ++ " of " ++ show s
 -- A2
 -- We chose to use option 1.
 
--- Calculates the total value of a given hand with the given value to 
--- represent aces.
+-- Returns the value of a player's hand.
 value :: Hand -> Integer
 value h
     | init <= 21 = init
