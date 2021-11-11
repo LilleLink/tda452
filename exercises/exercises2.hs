@@ -1,3 +1,4 @@
+import System.Random(randomRs,mkStdGen)
 -- (1) Give a recursive definition of filter
 -- The filter takes a predicate and applies it to a list, returning all the 
 -- entries that return true when applied.
@@ -53,4 +54,10 @@ power' n k = iter (k-1) (*n) n
 -- (6) Define iter using the standard function iterate
 iter' :: Integer -> (a -> a) -> a -> a
 iter' n f a = iterate f a !! fromInteger n
+
+-- (7)
+type WeekNumber = Int
+sales :: WeekNumber -> Integer
+sales i = randomRs (0,1000) (mkStdGen i) !! i
+
 
