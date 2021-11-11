@@ -55,9 +55,20 @@ power' n k = iter (k-1) (*n) n
 iter' :: Integer -> (a -> a) -> a -> a
 iter' n f a = iterate f a !! fromInteger n
 
--- (7)
+-- (7) Define a function longestStreak :: WeekNumber -> Int given the
+-- definition below that counts the largest number of weeks that the
+-- sales between two weeks are strictly increasing (>)
 type WeekNumber = Int
 sales :: WeekNumber -> Integer
 sales i = randomRs (0,1000) (mkStdGen i) !! i
 
+longestStreak :: WeekNumber -> Int
+longestStreak w = accStreak w 0 0
+    where 
+    accStreak 0 _ lgstStrk = lgstStrk
+    accStreak w curStrk lgstStrk
+        | sales w < sales (w-1) && curStrk+1 
+            > lgstStrk = accStreak (w-1) (curStrk+1) (curStrk+1)
+        | sales w < sales (w-1) = accStreak (w-1) (curStrk+1) lgstStrk
+        | otherwise = accStreak (w-1) 0 lgstStrk
 
