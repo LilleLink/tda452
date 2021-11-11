@@ -155,3 +155,11 @@ wordCount = unlines
 
 -- . = function composition operator, works backwards.
 -- applies words, applies sort, then lastly group.
+
+zip' :: [a] -> [b] -> [(a,b)]
+zip' (a:as) (b:bs) = (a,b) : zip' as bs
+zip' _ _ = []
+
+zipWith' :: (a -> b -> c) -> [a] -> [b] -> [c]
+zipWith' f (a:as) (b:bs) = f a b : zipWith' f as bs
+zipWith' _ _ _ = []
