@@ -72,3 +72,10 @@ longestStreak w = accStreak w 0 0
         | sales w < sales (w-1) = accStreak (w-1) (curStrk+1) lgstStrk
         | otherwise = accStreak (w-1) 0 lgstStrk
 
+segments :: (a -> Bool) -> [a] -> [[a]]
+segments _ [] = []
+segments p xs = takeWhile p xs : segments p (drop 1 $ dropWhile p xs)
+
+longestStreak' :: WeekNumber -> Int
+longestStreak' w = maximum (map length (segments (== True) (zipWith (<) salesList (tail salesList))))
+    where salesList = [sales n | n <- [0..w]]
