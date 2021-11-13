@@ -30,9 +30,7 @@ isX _ = False
 -- (and gives False otherwise).
 
 containsZero :: B -> Bool
-containsZero (X i)
-    | i == 0 = True
-    | otherwise = False
+containsZero (X i) = i == 0
 containsZero (Y b) = containsZero b
 containsZero (W b1 b2 b3) = containsZero b1 || containsZero b2
     || containsZero b3
