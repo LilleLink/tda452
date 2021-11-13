@@ -58,9 +58,7 @@ numberOfAces (Add c h)
 -- A3
 -- Determines if the player with the given hand is bust or not.
 gameOver :: Hand -> Bool
-gameOver h 
-    | value h > 21 = True
-    | otherwise = False
+gameOver h = value h > 21
 
 -- A4
 -- Determines which players has won given the two hands.
