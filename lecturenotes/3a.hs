@@ -92,3 +92,8 @@ mySequence (i:is) = do
     a <- i
     as <- mySequence is
     return (a:as)
+
+------------------------------------------------------------
+-- Hangman game now, see file
+
+-- IO is an example of a monad
