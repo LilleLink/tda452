@@ -75,8 +75,8 @@ winner guestHand bankHand
 -- Puts the first hand on top of the second hand.
 (<+) :: Hand -> Hand -> Hand
 Empty       <+ Empty       = Empty
-(Add c1 h1) <+ Empty       = Add c1 h1
-Empty       <+ (Add c2 h2) = Add c2 h2
+h           <+ Empty       = h
+Empty       <+ h           = h
 (Add c1 h1) <+ (Add c2 h2) = Add c1 $ h1 <+ Add c2 h2
 
 -- Property for checking if <+ is associative.
@@ -139,28 +139,32 @@ drawAtIndex hand i = remove hand i Empty
 
 -- Property for checking that the shuffled deck contains the same cards
 -- as it did before shuffling.
-prop_shuffle_sameCards :: StdGen -> Card -> Hand -> Bool 
-prop_shuffle_sameCards g c h = 
+prop_shuffle_sameCards :: StdGen -> Card -> Hand -> Bool
+prop_shuffle_sameCards g c h =
     c `belongsTo` h == c `belongsTo` shuffleDeck g h
 
 -- Helper function for the sameCards property that checks if
 -- a card is in the given hand.
-belongsTo :: Card -> Hand -> Bool 
-c `belongsTo` Empty      = False 
+belongsTo :: Card -> Hand -> Bool
+c `belongsTo` Empty      = False
 c `belongsTo` (Add c' h) = c == c' || c `belongsTo` h
+
+-- Property that checks if size of deck remains the same after shuffle.
+prop_size_shuffle :: StdGen -> Hand -> Bool
+prop_size_shuffle g h = size h == size (shuffleDeck g h)
 
 -- B6
 -- Code was given
-implementation = Interface 
-  { iFullDeck = fullDeck 
-  , iValue    = value 
-  , iDisplay  = display 
-  , iGameOver = gameOver 
-  , iWinner   = winner  
-  , iDraw     = draw 
-  , iPlayBank = playBank 
-  , iShuffle  = shuffleDeck 
+implementation = Interface
+  { iFullDeck = fullDeck
+  , iValue    = value
+  , iDisplay  = display
+  , iGameOver = gameOver
+  , iWinner   = winner
+  , iDraw     = draw
+  , iPlayBank = playBank
+  , iShuffle  = shuffleDeck
   }
 
-main :: IO () 
+main :: IO ()
 main = runGame implementation
