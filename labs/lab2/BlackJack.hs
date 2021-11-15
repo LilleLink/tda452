@@ -111,7 +111,7 @@ draw Empty hand = error "draw: The deck is empty."
 draw (Add c h) hand = (h, Add c hand)
 
 -- B4
--- 
+-- Returns the banks played hand given a deck.
 playBank :: Hand -> Hand
 playBank deck = playBankHelper deck Empty
 
