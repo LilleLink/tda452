@@ -49,3 +49,8 @@ elements' :: [a] -> Gen a
 elements' list = (list !!) <$> choose (0, length list - 1)
 
 -- (6) 
+-- Shrink implementation
+-- Permutations of input array with one element gone, and one element reduced by one.
+
+-- (7)
+-- Functor f => (a -> b) -> f a -> f b
