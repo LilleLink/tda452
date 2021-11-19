@@ -43,3 +43,9 @@ contains' :: Int -> Gen [Int]
 contains' n = do
     list <- listOf arbitrary
     return (insert n list)
+
+-- (5) Write elements yourself lol
+elements' :: [a] -> Gen a
+elements' list = (list !!) <$> choose (0, length list - 1)
+
+-- (6) 
