@@ -1,6 +1,9 @@
 module Sudoku where
 
 import Test.QuickCheck
+import Data.Maybe ( isNothing )
+import Data.Char
+import Data.List
 
 ------------------------------------------------------------------------------
 
@@ -8,7 +11,7 @@ import Test.QuickCheck
 type Cell = Maybe Int -- a single cell
 type Row  = [Cell]    -- a row is a list of cells
 
-data Sudoku = Sudoku [Row] 
+data Sudoku = Sudoku [Row]
  deriving ( Show, Eq )
 
 rows :: Sudoku -> [Row]
@@ -36,21 +39,26 @@ example =
 
 -- | allBlankSudoku is a sudoku with just blanks
 allBlankSudoku :: Sudoku
-allBlankSudoku = Sudoku [r | r <- [Nothing | n <- [1..9]]]
+allBlankSudoku = Sudoku $ replicate 9 $ replicate 9 Nothing
 
 -- * A2
 
 -- | isSudoku sud checks if sud is really a valid representation of a sudoku
 -- puzzle
 isSudoku :: Sudoku -> Bool
-isSudoku = undefined
+isSudoku (Sudoku rows) = (length rows == 9) &&
+    all (\x -> length x == 9) rows &&
+    all (all checkCell) rows
+    where
+        checkCell (Just n) = 1 <= n && n <= 9
+        checkCell Nothing = True
 
 -- * A3
 
 -- | isFilled sud checks if sud is completely filled in,
 -- i.e. there are no blanks
 isFilled :: Sudoku -> Bool
-isFilled = undefined
+isFilled (Sudoku rows) = not (any (any isNothing) rows)
 
 ------------------------------------------------------------------------------
 
@@ -59,38 +67,63 @@ isFilled = undefined
 -- | printSudoku sud prints a nice representation of the sudoku sud on
 -- the screen
 printSudoku :: Sudoku -> IO ()
-printSudoku = undefined
+printSudoku sud = do
+    mapM_ putStrLn (toString sud)
+    where
+        toString :: Sudoku -> [[Char]]
+        toString (Sudoku rows) = map (map toChar) rows
+
+        toChar :: Cell -> Char
+        toChar (Just n) = intToDigit n
+        toChar Nothing = '.'
+
 
 -- * B2
 
 -- | readSudoku file reads from the file, and either delivers it, or stops
 -- if the file did not contain a sudoku
 readSudoku :: FilePath -> IO Sudoku
-readSudoku = undefined
+readSudoku file =
+    if not $ ".sud" `isSuffixOf` file
+        then error "Not a .sud file."
+        else do
+        s <- readFile file
+        return $ Sudoku $ map (map toCell) (lines s)
+        where
+            toCell :: Char -> Cell
+            toCell '.' = Nothing
+            toCell c   = Just $ digitToInt c
+
 
 ------------------------------------------------------------------------------
 
 -- * C1
 
 -- | cell generates an arbitrary cell in a Sudoku
-cell :: Gen (Cell)
-cell = undefined
+cell :: Gen Cell
+cell =
+    frequency [(9, nothingGen), (1, rJustInt)]
+    where
+        nothingGen :: Gen Cell
+        nothingGen = do return Nothing
+        rJustInt :: Gen Cell
+        rJustInt = do
+            int <- chooseInt(1,9)
+            return $ Just int
 
 
 -- * C2
 
 -- | an instance for generating Arbitrary Sudokus
 instance Arbitrary Sudoku where
-  arbitrary = undefined
+  arbitrary = do
+        Sudoku <$> vectorOf 9 (vectorOf 9 cell)
 
- -- hint: get to know the QuickCheck function vectorOf
- 
 -- * C3
 
 prop_Sudoku :: Sudoku -> Bool
-prop_Sudoku = undefined
-  -- hint: this definition is simple!
-  
+prop_Sudoku = isSudoku
+
 ------------------------------------------------------------------------------
 
 type Block = [Cell] -- a Row is also a Cell
@@ -99,13 +132,19 @@ type Block = [Cell] -- a Row is also a Cell
 -- * D1
 
 isOkayBlock :: Block -> Bool
-isOkayBlock = undefined
+isOkayBlock block = length ints == (length . nub) ints
+    where
+        ints = filter (/= Nothing) block
 
 
 -- * D2
 
 blocks :: Sudoku -> [Block]
-blocks = undefined
+blocks sud = rs ++ cs
+    where
+        rs = rows sud
+        cs = transpose (rows sud)
+        bs = map (splitAt 3) rs
 
 prop_blocks_lengths :: Sudoku -> Bool
 prop_blocks_lengths = undefined
