@@ -149,7 +149,7 @@ blocks sud = [squareBlock sud (x*3) (y*3) | x <- [0..2], y <- [0..2]] ++
 -- | Extracts a 3x3 block from a given sudoku at the given coordinates
 -- x and y.
 squareBlock :: Sudoku -> Int -> Int -> [Cell]
-squareBlock sud x y = [rows sud !! r !! c | c <- [x..x+2], r <- [y..y+2]]
+squareBlock sud x y = [rows sud !! r !! c | r <- [y..y+2], c <- [x..x+2]]
 
 -- | Checks that there are 9 rows, 9 columns and 9 3x3 blocks of length 9.
 prop_blocks_lengths :: Sudoku -> Bool
