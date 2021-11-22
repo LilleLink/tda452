@@ -83,16 +83,15 @@ printSudoku sud = do
 -- | readSudoku file reads from the file, and either delivers it, or stops
 -- if the file did not contain a sudoku
 readSudoku :: FilePath -> IO Sudoku
-readSudoku file =
-    if not $ ".sud" `isSuffixOf` file
-        then error "Not a .sud file."
-        else do
-        s <- readFile file
-        return $ Sudoku $ map (map toCell) (lines s)
-        where
-            toCell :: Char -> Cell
-            toCell '.' = Nothing
-            toCell c   = Just $ digitToInt c
+readSudoku file = do
+    s <- readFile file
+    return $ Sudoku $ map (map toCell) (lines s)
+    where
+        toCell :: Char -> Cell
+        toCell '.' = Nothing
+        toCell c
+                | '1' <= c && c <= '9' = Just $ digitToInt c
+                | otherwise = error "Invalid characters in file."
 
 
 ------------------------------------------------------------------------------
