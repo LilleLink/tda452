@@ -3,7 +3,7 @@ module Sudoku where
 import Test.QuickCheck
 import Data.Maybe ( isNothing )
 import Data.Char
-import Data.List
+import Data.List ( nub, transpose )
 
 ------------------------------------------------------------------------------
 
