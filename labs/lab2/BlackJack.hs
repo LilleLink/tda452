@@ -137,6 +137,14 @@ drawAtIndex hand i = remove hand i Empty
         remove (Add c h) 0 removed = (removed <+ h,c)
         remove (Add c h) i removed = remove h (i-1) (removed <+ Add c Empty)
 
+drawAtIndex' :: Hand -> Integer -> (Hand, Card)
+drawAtIndex' = remove
+    where
+        remove Empty _ = error "remove: Invalid Index"
+        remove (Add c h) 0 = (h, c)
+        remove (Add c h) n = (Add c h', c')
+            where (h', c') = remove h (n-1)
+
 -- Property for checking that the shuffled deck contains the same cards
 -- as it did before shuffling.
 prop_shuffle_sameCards :: StdGen -> Card -> Hand -> Bool
