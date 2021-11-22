@@ -120,7 +120,7 @@ instance Arbitrary Sudoku where
         Sudoku <$> vectorOf 9 (vectorOf 9 cell)
 
 -- * C3
-
+-- | Property function for checking if a given soduko is valid.
 prop_Sudoku :: Sudoku -> Bool
 prop_Sudoku = isSudoku
 
@@ -130,7 +130,7 @@ type Block = [Cell] -- a Row is also a Cell
 
 
 -- * D1
-
+-- | Checks that the given block doesn't contain any duplicate cells.
 isOkayBlock :: Block -> Bool
 isOkayBlock block = length ints == (length . nub) ints
     where
@@ -139,20 +139,26 @@ isOkayBlock block = length ints == (length . nub) ints
 
 -- * D2
 
+-- | Returns a list of each block in the sudoku. All 9 rows, 9 columns,
+-- and 9 3x3 blocks using the helper function squareBlock.
 blocks :: Sudoku -> [Block]
 blocks sud = [squareBlock sud (x*3) (y*3) | x <- [0..2], y <- [0..2]] ++
     rows sud ++
     transpose (rows sud)
 
+-- | Extracts a 3x3 block from a given sudoku at the given coordinates
+-- x and y.
 squareBlock :: Sudoku -> Int -> Int -> [Cell]
 squareBlock sud x y = [rows sud !! r !! c | c <- [x..x+2], r <- [y..y+2]]
 
+-- | Checks that there are 9 rows, 9 columns and 9 3x3 blocks of length 9.
 prop_blocks_lengths :: Sudoku -> Bool
 prop_blocks_lengths sud = length bs == 27 && all (\x -> length x == 9) bs
     where bs = blocks sud
 
 -- * D3
-
+-- | Checks that a given sudoku does not contain duplicate integers in any 
+-- column, row, or 3x3 block.
 isOkay :: Sudoku -> Bool
 isOkay sud = all isOkayBlock (blocks sud)
 
