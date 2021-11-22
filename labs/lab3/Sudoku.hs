@@ -140,19 +140,21 @@ isOkayBlock block = length ints == (length . nub) ints
 -- * D2
 
 blocks :: Sudoku -> [Block]
-blocks sud = rs ++ cs
-    where
-        rs = rows sud
-        cs = transpose (rows sud)
-        bs = map (splitAt 3) rs
+blocks sud = [squareBlock sud (x*3) (y*3) | x <- [0..2], y <- [0..2]] ++
+    rows sud ++
+    transpose (rows sud)
+
+squareBlock :: Sudoku -> Int -> Int -> [Cell]
+squareBlock sud x y = [rows sud !! r !! c | c <- [x..x+2], r <- [y..y+2]]
 
 prop_blocks_lengths :: Sudoku -> Bool
-prop_blocks_lengths = undefined
+prop_blocks_lengths sud = length bs == 27 && all (\x -> length x == 9) bs
+    where bs = blocks sud
 
 -- * D3
 
 isOkay :: Sudoku -> Bool
-isOkay = undefined
+isOkay sud = all isOkayBlock (blocks sud)
 
 
 ---- Part A ends here --------------------------------------------------------
