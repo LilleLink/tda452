@@ -1,2 +1,6 @@
 .ghc.environment.x86_64-mingw32-8.10.7
 .DS_Store
+
+/labs/lab3/Sudoku.hi
+/labs/lab3/Sudoku.o
+/labs/lab3/Sudoku
