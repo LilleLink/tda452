@@ -195,7 +195,7 @@ xs !!= (i,y)
 
 -- | Checks that the element is in fact updated and that the list
 -- has the same length before and after.
-prop_bangBangEquals_correct :: Eq a => [a] -> (Int,a) -> Bool
+prop_bangBangEquals_correct :: [String] -> (Int,String) -> Bool
 prop_bangBangEquals_correct xs (i,y) =
     (result !! i) == y &&
     length xs == length result
