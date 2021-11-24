@@ -5,7 +5,7 @@ import Data.Maybe ( isNothing, mapMaybe, listToMaybe )
 import Data.Char
 import Data.List ( nub, transpose, (\\) )
 
-------------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
 -- | Representation of sudoku puzzles (allows some junk)
 type Cell = Maybe Int -- a single cell
@@ -60,7 +60,7 @@ isSudoku (Sudoku rows) = (length rows == 9) &&
 isFilled :: Sudoku -> Bool
 isFilled (Sudoku rows) = not (any (any isNothing) rows)
 
-------------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
 -- * B1
 
@@ -94,7 +94,7 @@ readSudoku file = do
                 | otherwise = error "Invalid characters in file."
 
 
-------------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
 -- * C1
 
@@ -123,7 +123,7 @@ instance Arbitrary Sudoku where
 prop_Sudoku :: Sudoku -> Bool
 prop_Sudoku = isSudoku
 
-------------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
 type Block = [Cell] -- a Row is also a Cell
 
@@ -162,9 +162,9 @@ isOkay :: Sudoku -> Bool
 isOkay sud = all isOkayBlock (blocks sud)
 
 
----- Part A ends here --------------------------------------------------------
-------------------------------------------------------------------------------
----- Part B starts here ------------------------------------------------------
+---- Part A ends here ------------------------------------------------------
+----------------------------------------------------------------------------
+---- Part B starts here ----------------------------------------------------
 
 
 -- | Positions are pairs (row,column),
@@ -217,7 +217,7 @@ prop_update_updated sud pos cell =
     rows (update sud pos cell) !! fst pos !! snd pos == cell
 
 
------------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
 -- * F1
 -- | Returns a solution to the Sudoku or Nothing if there are none.
@@ -254,6 +254,7 @@ isSolutionOf solution partial =
                 [(r,c) | r <- [0..8], c <- [0..8]] \\ blanks partial
 
 -- * F4
+-- | Property checks that the solution is sound.
 prop_SolveSound :: Sudoku -> Property
 prop_SolveSound sud =
     property $ case solve sud of
