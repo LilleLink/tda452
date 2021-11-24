@@ -1,9 +1,9 @@
 module Sudoku where
 
 import Test.QuickCheck
-import Data.Maybe ( isNothing, mapMaybe, listToMaybe, fromJust)
+import Data.Maybe ( isNothing, fromJust, listToMaybe, catMaybes, mapMaybe )
 import Data.Char
-import Data.List ( nub, transpose, (\\) )
+import Data.List ( nub, transpose )
 
 ------------------------------------------------------------------------------
 
@@ -172,93 +172,78 @@ isOkay sud = all isOkayBlock (blocks sud)
 type Pos = (Int,Int)
 
 -- * E1
--- | Returns all the blank cells in the sudoku as a list of (row,column).
+
+-- | Returns all the blank cells in the sudoku as a list of coordinates.
 blanks :: Sudoku -> [Pos]
-blanks (Sudoku rows) =
-    [(r,c) | r <- [0..8], c <- [0..8], isNothing (rows !! r !! c)]
+blanks sud = [(x,y) | x <- [0..8], y <- [0..8], cellIsEmpty (x,y) sud]
 
+-- | Checks if a given position in a sudoku is empty. 
+cellIsEmpty :: Pos -> Sudoku -> Bool
+cellIsEmpty (x,y) (Sudoku rows) | isNothing (rows !! x !! y) = True
+                                | otherwise = False
 
--- | Checks that the blanks allBlankSudoku returns all coordinates.
-prop_blanks_allBlanks :: Bool
-prop_blanks_allBlanks =
-    blanks allBlankSudoku == [(r,c) | r <- [0..8], c <- [0..8]]
+-- | Property function that checks that the allBlankSudoku is all blanks.
+prop_blanks_allBlanks :: Sudoku -> Bool
+prop_blanks_allBlanks sud = 81 == length (blanks allBlankSudoku)
 
 
 -- * E2
 
--- | Changes the value at a given index in a list,
--- will throw an error if i is out of bounds
+-- | Updates the value at a given index in a list and returns the updated 
+-- list
 (!!=) :: [a] -> (Int,a) -> [a]
-xs !!= (i,y)
-    | i < 0 || i >= length xs = error "==!: Invalid index!!"
-    | otherwise = take i xs ++ [y]  ++ drop (i+1) xs
+xs !!= (i,y) | i >= length xs && i < 0
+                = error "(!!=) Array index out of bounds"
+             | null xs = error "(!!=) List empty"
+             | otherwise = take i xs ++ [y] ++ drop (i+1) xs
 
--- | Checks that the element is in fact updated and that the list
--- has the same length before and after.
-prop_bangBangEquals_correct :: Eq a => [a] -> (Int,a) -> Bool
-prop_bangBangEquals_correct xs (i,y) =
-    (result !! i) == y &&
-    length xs == length result
-        where result = xs !!= (i,y)
+-- Cases that can go wrong:
+-- i is out of bounds (too large or negative)
+-- The list is empty
+-- These will throw errors
 
+-- | Checks that an updated row is in fact updated at the given index and
+-- that it has the same length.
+prop_bangBangEquals_correct :: [Int] -> (Int, Int) -> Bool
+prop_bangBangEquals_correct xs (i, x) = bxs !! i == x &&
+                                        length bxs == length xs
+                                            where bxs = xs !!= (i,x)
 
 
 -- * E3
+
 -- | Replaces the cell at the given position with a new cell in the sudoku.
 update :: Sudoku -> Pos -> Cell -> Sudoku
-update (Sudoku rows) (r,c) cell =
-    Sudoku $ rows !!= (r,updatedRow)
-        where
-            updatedRow = rows !! r !!= (c,cell)
+update sud (x,y) c = Sudoku (take x r ++ updatedRow ++ drop (x+1) r)
+    where
+        r = rows sud
+        updatedRow = [(r !! x) !!= (y,c)]
 
--- | Checks that the sudoku got updated at the correct position.
+-- | Checks that the sudoku got updated at the correct position
 prop_update_updated :: Sudoku -> Pos -> Cell -> Bool
-prop_update_updated sud pos cell =
-    rows (update sud pos cell) !! fst pos !! snd pos == cell
+prop_update_updated sud (x,y) c = rows updated !! x !! y == c
+    where updated = update sud (x,y) c
 
 
------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 
 -- * F1
--- | Returns a solution to the Sudoku or Nothing if there are none.
 solve :: Sudoku -> Maybe Sudoku
-solve sud = listToMaybe $ solve' sud (blanks sud)
-    where
-        solve' :: Sudoku -> [Pos] -> [Sudoku]
-        solve' sud bs
-            | not (isSudoku sud && isOkay sud) = []
-            | isFilled sud                     = [sud]
-            | otherwise = mapMaybe solve alternatives
+solve sud = listToMaybe sol
+    where sol = solve' sud (blanks sud)
+
+solve' :: Sudoku -> [Pos] -> [Sudoku]
+solve' sud bs | not (isSudoku sud && isOkay sud) = []
+              | isFilled sud                     = [sud]
+              | otherwise = mapMaybe solve alternatives--catMaybes [solve $ update sud b x | x <- map Just [1..9]]
                 where
-                    alternatives = [update sud b x | x <- map Just [1..9]]
+                    alternatives = [update sud b x | x <- map Just [1..9]] 
                     b = head bs
 
 -- * F2
--- | Reads a sudoku and returns a solution.
-readAndSolve :: FilePath -> IO ()
-readAndSolve file = do
-    s <- readSudoku file
-    case solve s of
-        Just solution -> printSudoku solution
-        Nothing       -> putStrLn "(no solution)"
+
 
 -- * F3
--- | Checks that the first sudoku is a solution to the second one.
-isSolutionOf :: Sudoku -> Sudoku -> Bool
-isSolutionOf solution partial =
-    isOkay solution &&
-    null (blanks solution) &&
-    and [rows solution !! r !! c == rows partial !! r !! c |
-                             (r,c) <- nonBlanksPartial]
-        where nonBlanksPartial = 
-                [(r,c) | r <- [0..8], c <- [0..8]] \\ blanks partial
+
 
 -- * F4
-prop_SolveSound :: Sudoku -> Property
-prop_SolveSound sud =
-    property $ case solve sud of
-        (Just solution) -> isSolutionOf solution sud
-        Nothing         -> True
-
-main :: IO()
-main = quickCheck prop_SolveSound
