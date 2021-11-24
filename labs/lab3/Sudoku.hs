@@ -1,4 +1,4 @@
-module Main where
+module Sudoku where
 
 import Test.QuickCheck
 import Data.Maybe ( isNothing, mapMaybe, listToMaybe, fromJust)
