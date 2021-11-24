@@ -4,6 +4,7 @@ import Test.QuickCheck
 import Data.Maybe ( isNothing, mapMaybe, listToMaybe )
 import Data.Char
 import Data.List ( nub, transpose, (\\) )
+import Data.Bifunctor (bimap)
 
 ----------------------------------------------------------------------------
 
@@ -215,7 +216,9 @@ update (Sudoku rows) (r,c) cell =
 -- | Checks that the sudoku got updated at the correct position.
 prop_update_updated :: Sudoku -> Pos -> Cell -> Bool
 prop_update_updated sud pos cell =
-    rows (update sud pos cell) !! fst pos !! snd pos == cell
+    rows (update sud moddedPos cell) !! fst moddedPos !! snd moddedPos == cell
+        where moddedPos = bimap fixIllegal fixIllegal pos
+              fixIllegal x = x `mod` 9
 
 
 ----------------------------------------------------------------------------
