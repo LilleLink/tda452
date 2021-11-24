@@ -1,7 +1,7 @@
 module Sudoku where
 
 import Test.QuickCheck
-import Data.Maybe ( isNothing, mapMaybe, listToMaybe, fromJust)
+import Data.Maybe ( isNothing, mapMaybe, listToMaybe )
 import Data.Char
 import Data.List ( nub, transpose, (\\) )
 
