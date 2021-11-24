@@ -198,9 +198,7 @@ xs !!= (i,y)
 -- has the same length before and after.
 prop_bangBangEquals_correct :: [String] -> (Int,String) -> Bool
 prop_bangBangEquals_correct xs (i,y) =
-    (result !! i) == y &&
-    length xs == length result
-        where result = xs !!= (i,y)
+    xs !!= (i,y) !! i == y
 
 
 
