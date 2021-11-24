@@ -190,6 +190,7 @@ prop_blanks_allBlanks =
 -- will throw an error if i is out of bounds
 (!!=) :: [a] -> (Int,a) -> [a]
 xs !!= (i,y)
+    | null xs = [y]
     | i < 0 || i >= length xs = error "==!: Invalid index!!"
     | otherwise = take i xs ++ [y]  ++ drop (i+1) xs
 
@@ -250,7 +251,7 @@ isSolutionOf solution partial =
     null (blanks solution) &&
     and [rows solution !! r !! c == rows partial !! r !! c |
                              (r,c) <- nonBlanksPartial]
-        where nonBlanksPartial = 
+        where nonBlanksPartial =
                 [(r,c) | r <- [0..8], c <- [0..8]] \\ blanks partial
 
 -- * F4
