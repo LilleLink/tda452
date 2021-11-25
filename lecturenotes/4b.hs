@@ -1,5 +1,3 @@
-import Dwarf.Constants (dW_OP_lit0)
-import Control.Arrow (ArrowChoice(right))
 import Data.Char ( toUpper )
 -------------------------------------------------------------------------------
 -- What is lazy evaluation? --
