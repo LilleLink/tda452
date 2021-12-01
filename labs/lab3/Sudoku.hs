@@ -191,16 +191,16 @@ prop_blanks_allBlanks =
 -- will throw an error if i is out of bounds
 (!!=) :: [a] -> (Int,a) -> [a]
 xs !!= (i,y)
-    | null xs = [y]
     | i < 0 || i >= length xs = error "==!: Invalid index!!"
     | otherwise = take i xs ++ [y]  ++ drop (i+1) xs
 
 -- | Checks that the element is in fact updated and that the list
 -- has the same length before and after.
 prop_bangBangEquals_correct :: [String] -> (Int,String) -> Bool
-prop_bangBangEquals_correct xs (i,y)
-    | null xs = xs !!= (i,y) == [y]
-    | otherwise = xs !!= (modi,y) !! modi == y
+prop_bangBangEquals_correct [] _ = True
+prop_bangBangEquals_correct xs (i,y) =
+    xs !!= (modi,y) !! modi == y &&
+    length xs == length (xs !!= (modi, y))
         where modi = i `mod` length xs
 
 
