@@ -23,7 +23,7 @@ whileLoop p f = undefined -- There is a function whileM_ in the Control.Monad.Lo
 -- by joining together fileName.part1 .. fileName.partn  
 joinFiles n fileName = do
     writeFile fileName "" -- create empty file  
-    forM_ [0..n] $ \i -> 
+    forM_ [0..n] $ \i ->
         do  c <- readFile $ fileName ++ ".part"++ show i
             appendFile fileName c
     putStrLn "Done"
@@ -42,17 +42,21 @@ runGen (Gen a) = a
 instance Functor Gen where
   fmap = liftM
 instance Applicative Gen where
-  pure = return 
+  pure = return
   (<*>) = ap
 ----
 instance Monad Gen where
   -- a -> Gen a
-  return a = Gen (\newStdGen -> (a,newStdGen))
+  return a = Gen (\s -> (a,s))
   -- Gen a -> (a -> Gen b) -> Gen b
-  (Gen a) >>= f = f (fst (a (return newStdGen)))
+  mg >>= f = do
+    gen <- mg
+    f gen
 
 generate :: Gen a -> IO a
-generate = undefined
+generate g = do
+  fst . runGen g <$> newStdGen
+
 
 choose :: Random a => (a,a) -> Gen a
 choose = undefined
