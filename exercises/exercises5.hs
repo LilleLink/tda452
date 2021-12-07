@@ -47,11 +47,11 @@ instance Applicative Gen where
 ----
 instance Monad Gen where
   -- a -> Gen a
-  return a = Gen (\s -> (a,s))
+  return a = Gen (\gen -> (a,gen))
   -- Gen a -> (a -> Gen b) -> Gen b
   mg >>= f = do
-    gen <- mg
-    f gen
+    g <- mg
+    f g
 
 generate :: Gen a -> IO a
 generate g = do
@@ -60,3 +60,7 @@ generate g = do
 
 choose :: Random a => (a,a) -> Gen a
 choose = undefined
+
+diceRoll :: Gen Int
+diceRoll = do
+  
