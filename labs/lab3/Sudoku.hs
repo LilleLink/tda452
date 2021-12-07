@@ -226,13 +226,15 @@ prop_update_updated sud pos cell =
 -- * F1
 -- | Returns a solution to the Sudoku or Nothing if there are none.
 solve :: Sudoku -> Maybe Sudoku
-solve sud = listToMaybe $ solve' sud (blanks sud)
+solve sud 
+        | not $ isSudoku sud = Nothing
+        | otherwise = listToMaybe $ solve' sud (blanks sud)
     where
         solve' :: Sudoku -> [Pos] -> [Sudoku]
         solve' sud bs
-            | not (isSudoku sud && isOkay sud) = []
-            | isFilled sud                     = [sud]
-            | otherwise = mapMaybe solve alternatives
+            | not $ isOkay sud = []
+            | null bs          = [sud]
+            | otherwise        = mapMaybe solve alternatives
                 where
                     alternatives = [update sud b x | x <- map Just [1..9]]
                     b = head bs
