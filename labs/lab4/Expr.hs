@@ -102,7 +102,48 @@ prop_showReadExpr expr =
     assoc expr == (assoc . fromJust . readExpr . show) expr
 
 arbExpr :: Int -> Gen Expr
-arbExpr = undefined
+arbExpr s = frequency [(1,rNum), (1,genX), (s,rBin), (s,rFunc)]
+    where
+        range = 10
+        s' = s `div` 2
+
+        genX = do return X
+
+        rNum = Num <$> choose (-range,range)
+
+        rBin = do 
+            op <- elements [Add, Mul]
+            e1 <- arbExpr s'
+            e2 <- arbExpr s'
+            return $ op e1 e2
+        
+        rFunc = do
+            func <- elements [Sin, Cos]
+            e <- arbExpr s'
+            return $ func e
 
 instance Arbitrary Expr where
     arbitrary = sized arbExpr
+
+-- F
+simplify :: Expr -> Expr
+simplify   (Num x)               = Num x
+
+simplify   (Add (Num 0) e)       = simplify e
+simplify   (Add e (Num 0))       = simplify e
+simplify e@(Add (Num a) (Num b)) = Num $ eval e 0
+simplify   (Add e1 e2)           = Add (simplify e1) (simplify e2)
+
+simplify   (Mul (Num 0) _)       = Num 0
+simplify   (Mul _ (Num 0))       = Num 0
+simplify   (Mul (Num 1) e)       = simplify e
+simplify   (Mul e (Num 1))       = simplify e
+simplify e@(Mul (Num a) (Num b)) = Num $ eval e 0
+simplify   (Mul e1 e2)           = Mul (simplify e1) (simplify e2)
+
+simplify e@(Sin (Num a))         = Num $ eval e 0
+simplify e@(Cos (Num a))         = Num $ eval e 0
+simplify   (Sin e)               = Sin (simplify e)
+simplify   (Cos e)               = Cos (simplify e)
+
+simplify X                       = X
