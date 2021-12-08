@@ -26,3 +26,19 @@ import SlowQueue () -- Contains the API and functionality for a queue
 
 -------------------------------------------------------------------------------
 -- Fast Queue Implementation --
+
+-- Implementation in Queue.hs
+-- An invariant to keep in mind, if the front is empty we move the
+-- back to the front. Fixed via smart constructor.
+
+-- Still same complexity since we only move back to front when the
+-- front is empty, which is not often. Amortized complexity.
+
+-------------------------------------------------------------------------------
+-- Lookup table --
+-- Mapping keys to value
+-- type Table k v = [(k,v)]
+
+-- Invariant - keep the table sorted to utilise binary search
+-- we need to be able to break the table up fast
+data Table k v = Join (Table k v) (k v) (Table k v) | Empty
