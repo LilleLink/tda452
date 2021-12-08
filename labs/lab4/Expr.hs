@@ -12,10 +12,10 @@ data Expr
     | Mul Expr Expr
     | Sin Expr
     | Cos Expr
-    deriving (Eq, Show)
+    deriving (Eq)
 
--- instance Show Expr where
---     show = showExpr
+instance Show Expr where
+    show = showExpr
 
 x :: Expr
 x = X
@@ -127,26 +127,34 @@ instance Arbitrary Expr where
 
 -- F
 simplify :: Expr -> Expr
-simplify   (Num x)               = Num x
+simplify e
+    | e == simplified = e
+    | otherwise = simplify simplified
+        where 
+        simplified = simplify' e
+        simplify'   (Num x)               = Num x
+        simplify'   X                     = X
 
-simplify   (Add (Num 0) e)       = simplify e
-simplify   (Add e (Num 0))       = simplify e
-simplify e@(Add (Num a) (Num b)) = Num $ eval e 0
-simplify   (Add e1 e2)           = simplify $ Add (simplify e1) (simplify e2)
+        simplify'   (Add (Num 0) e)       = simplify e
+        simplify'   (Add e (Num 0))       = simplify e
+        simplify' e@(Add (Num a) (Num b)) = Num (a+b)
+        simplify'   (Add e X)             = Add (simplify e) X
+        simplify'   (Add X e)             = Add X (simplify e)
+        simplify'   (Add e1 e2)           = Add (simplify e1) (simplify e2)
 
-simplify   (Mul (Num 0) _)       = Num 0
-simplify   (Mul _ (Num 0))       = Num 0
-simplify   (Mul (Num 1) e)       = simplify e
-simplify   (Mul e (Num 1))       = simplify e
-simplify e@(Mul (Num a) (Num b)) = Num $ eval e 0
-simplify   (Mul e1 e2)           = simplify $ Mul (simplify e1) (simplify e2)
+        simplify'   (Mul (Num 0) _)       = Num 0
+        simplify'   (Mul _ (Num 0))       = Num 0
+        simplify'   (Mul (Num 1) e)       = simplify e
+        simplify'   (Mul e (Num 1))       = simplify e
+        simplify' e@(Mul (Num a) (Num b)) = Num $ eval e 0
+        simplify'   (Mul e X)             = Mul (simplify e) X
+        simplify'   (Mul X e)             = Mul X (simplify e)
+        simplify'   (Mul e1 e2)           = Mul (simplify e1) (simplify e2)
 
-simplify e@(Sin (Num a))         = Num $ eval e 0
-simplify e@(Cos (Num a))         = Num $ eval e 0
-simplify   (Sin e)               = Sin (simplify e)
-simplify   (Cos e)               = Cos (simplify e)
-
-simplify X                       = X
+        simplify' e@(Sin (Num a))         = Num $ eval e 0
+        simplify' e@(Cos (Num a))         = Num $ eval e 0
+        simplify'   (Sin e)               = Sin (simplify e)
+        simplify'   (Cos e)               = Cos (simplify e)
 
 prop_simplify :: Expr -> Bool
 prop_simplify e = eval e 42 == eval (simplify e) 42
