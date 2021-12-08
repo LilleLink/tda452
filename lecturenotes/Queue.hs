@@ -41,8 +41,8 @@ fixQ [] back    = Q (reverse back) []
 fixQ front back = Q front back
 
 -- Test the operations by comparing to the slow queue
-
-instance Arbitrary a => Arbitrary (Q a)
+-- constraint that a has to be in artibrary aswell
+instance Arbitrary a => Arbitrary (Q a) 
   where
     arbitrary = do
         front <- arbitrary
@@ -53,6 +53,7 @@ instance Arbitrary a => Arbitrary (Q a)
 contents :: Q Int -> Slow.Q Int
 contents (Q front back) = Slow.Q (front ++ reverse back)
 
+prop_empty :: Bool
 prop_empty     = contents empty == Slow.empty
 
 prop_add a q   = contents (add a q) == Slow.add a (contents q)
