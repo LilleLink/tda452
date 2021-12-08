@@ -158,3 +158,20 @@ simplify e
 
 prop_simplify :: Expr -> Bool
 prop_simplify e = eval e 42 == eval (simplify e) 42
+
+-- G
+differentiate :: Expr -> Expr
+differentiate = simplify . diff . simplify
+    where
+    diff X           = Num 1
+    diff (Num _)     = Num 0
+    diff (Add e1 e2) = Add (differentiate e1) (differentiate e2)
+    diff (Mul e1 e2) = Add (Mul (differentiate e1) e2) (Mul e1 (differentiate e2))
+    diff (Sin e)     = Cos (differentiate e)
+    diff (Cos e)     = Mul (Num (-1)) (Sin (differentiate e))
+
+-- derive :: Expr -> Expr
+-- derive (Add e1 e2) = add (derive x e1) (derive x e2)
+-- derive (Mul e1 e2) = add (mul (derive x e1) e2) (mul e1 (derive x e2))
+-- derive X                = Num 1
+-- derive _                = Num 0
