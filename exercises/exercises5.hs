@@ -49,9 +49,10 @@ instance Monad Gen where
   -- a -> Gen a
   return a = Gen (\gen -> (a,gen))
   -- Gen a -> (a -> Gen b) -> Gen b
-  mg >>= f = do
-    g <- mg
-    f g
+  (Gen f) >>= g = Gen (\gen -> res gen)
+    where res gen = g' gen'
+            where (a, gen') = f gen
+                  Gen g' = g a 
 
 generate :: Gen a -> IO a
 generate g = do
@@ -61,6 +62,6 @@ generate g = do
 choose :: Random a => (a,a) -> Gen a
 choose = undefined
 
-diceRoll :: Gen Int
-diceRoll = do
+diceRoll :: Gen (StdGen -> (Int,StdGen))
+diceRoll = do return $ randomR (1,6)
   

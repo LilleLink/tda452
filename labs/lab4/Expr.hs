@@ -146,7 +146,7 @@ simplify'   (Mul (Num 0) _)       = Num 0
 simplify'   (Mul _ (Num 0))       = Num 0
 simplify'   (Mul (Num 1) e)       = simplify e
 simplify'   (Mul e (Num 1))       = simplify e
-simplify' e@(Mul (Num a) (Num b)) = Num $ eval e 0
+simplify' e@(Mul (Num a) (Num b)) = Num (a*b)
 simplify'   (Mul e X)             = Mul X (simplify e)
 simplify'   (Mul X e)             = Mul X (simplify e)
 simplify'   (Mul e1 e2)           = Mul (simplify e1) (simplify e2)
@@ -169,9 +169,3 @@ differentiate = simplify . diff . simplify
     diff (Mul e1 e2) = Add (Mul (differentiate e1) e2) (Mul e1 (differentiate e2))
     diff (Sin e)     = Cos (differentiate e)
     diff (Cos e)     = Mul (Num (-1)) (Sin (differentiate e))
-
--- derive :: Expr -> Expr
--- derive (Add e1 e2) = add (derive x e1) (derive x e2)
--- derive (Mul e1 e2) = add (mul (derive x e1) e2) (mul e1 (derive x e2))
--- derive X                = Num 1
--- derive _                = Num 0
