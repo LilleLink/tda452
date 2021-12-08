@@ -132,14 +132,14 @@ simplify   (Num x)               = Num x
 simplify   (Add (Num 0) e)       = simplify e
 simplify   (Add e (Num 0))       = simplify e
 simplify e@(Add (Num a) (Num b)) = Num $ eval e 0
-simplify   (Add e1 e2)           = Add (simplify e1) (simplify e2)
+simplify   (Add e1 e2)           = simplify $ Add (simplify e1) (simplify e2)
 
 simplify   (Mul (Num 0) _)       = Num 0
 simplify   (Mul _ (Num 0))       = Num 0
 simplify   (Mul (Num 1) e)       = simplify e
 simplify   (Mul e (Num 1))       = simplify e
 simplify e@(Mul (Num a) (Num b)) = Num $ eval e 0
-simplify   (Mul e1 e2)           = Mul (simplify e1) (simplify e2)
+simplify   (Mul e1 e2)           = simplify $ Mul (simplify e1) (simplify e2)
 
 simplify e@(Sin (Num a))         = Num $ eval e 0
 simplify e@(Cos (Num a))         = Num $ eval e 0
@@ -147,3 +147,6 @@ simplify   (Sin e)               = Sin (simplify e)
 simplify   (Cos e)               = Cos (simplify e)
 
 simplify X                       = X
+
+prop_simplify :: Expr -> Bool
+prop_simplify e = eval e 42 == eval (simplify e) 42
