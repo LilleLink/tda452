@@ -167,5 +167,5 @@ differentiate = simplify . diff . simplify
     diff (Num _)     = Num 0
     diff (Add e1 e2) = Add (differentiate e1) (differentiate e2)
     diff (Mul e1 e2) = Add (Mul (differentiate e1) e2) (Mul e1 (differentiate e2))
-    diff (Sin e)     = Cos (differentiate e)
-    diff (Cos e)     = Mul (Num (-1)) (Sin (differentiate e))
+    diff (Sin e)     = Mul (differentiate e) (Cos e)
+    diff (Cos e)     = Mul (differentiate e) (Mul (Num (-1)) (Sin e))

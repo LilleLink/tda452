@@ -44,7 +44,10 @@ setup window =
                                         case readExpr currentValue of
                                             Just expr -> set value (show (differentiate expr)) (pure input)
                                             Nothing   -> set value currentValue                (pure input)
+     
 
+     on UI.click      diff   $ \ _ -> readAndDraw input canvas slider
+                        
 --H
 points :: Expr -> Double -> (Int,Int) -> [Point]
 points expr scale (w,h) = zip xs $ map ((fromIntegral . round . realToPix . (expr `eval`)) . pixToReal) xs
@@ -70,7 +73,6 @@ readAndDraw input canvas slider = do -- Get the current formula (a String) from 
     -- It should be replaced with code that draws the graph of the function.
     --  set UI.fillStyle (UI.solidColor (UI.RGB 0 0 0)) (pure canvas)
     --  UI.fillText formula (10,canHeight/2) canvas
-    set UI.fillStyle (UI.solidColor (UI.RGB 0 0 0)) (pure canvas)
     path "gray" [(canWidth/2,0),(canWidth/2,canHeight)] canvas
     path "gray" [(0,canHeight/2),(canWidth, canHeight/2)] canvas
     case readExpr formula of
