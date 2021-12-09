@@ -37,24 +37,35 @@ setup window =
      on UI.click     draw  $ \ _ -> readAndDraw input canvas
      on valueChange' input $ \ _ -> readAndDraw input canvas
 
-
+--I
 readAndDraw :: Element -> Canvas -> UI ()
-readAndDraw input canvas =
-  do -- Get the current formula (a String) from the input element
-     formula <- get value input
-     -- Clear the canvas
-     clearCanvas canvas
-     -- The following code draws the formula text in the canvas and a blue line.
-     -- It should be replaced with code that draws the graph of the function.
-     set UI.fillStyle (UI.solidColor (UI.RGB 0 0 0)) (pure canvas)
-     UI.fillText formula (10,canHeight/2) canvas
-     path "blue" [(10,10),(canWidth-10,canHeight/2)] canvas
+readAndDraw input canvas = do -- Get the current formula (a String) from the input element
+    formula <- get value input
+    -- Clear the canvas
+    clearCanvas canvas
+    -- The following code draws the formula text in the canvas and a blue line.
+    -- It should be replaced with code that draws the graph of the function.
+    --  set UI.fillStyle (UI.solidColor (UI.RGB 0 0 0)) (pure canvas)
+    --  UI.fillText formula (10,canHeight/2) canvas
+    set UI.fillStyle (UI.solidColor (UI.RGB 0 0 0)) (pure canvas)
+    path "gray" [(canWidth/2,0),(canWidth/2,canHeight)] canvas
+    path "gray" [(0,canHeight/2),(canWidth, canHeight/2)] canvas
+    case readExpr formula of
+        Just expr -> do
+            UI.fillText (show expr) (10,10) canvas
+            path "blue" (points expr 0.04 (canWidth, canHeight)) canvas
+        Nothing     -> UI.fillText "Error parsing expression" (10,10) canvas
 
 
+--H
 points :: Expr -> Double -> (Int,Int) -> [Point]
-points expr scale (w,h) = zip range (map (eval expr) range)
-  where
-  scaledwidth = fromIntegral w * scale
-  step = scaledwidth / fromIntegral w
-  to = fromIntegral (w `div` 2) * scale
-  range = [-to,(-to+step)..to]
+points expr scale (w,h) = zip xs $ map ((fromIntegral . round . realToPix . (expr `eval`)) . pixToReal) xs
+    where
+        xs = map fromIntegral [0..w]
+        -- converts a pixel x-coordinate to a real x-coordinate
+        pixToReal :: Double -> Double
+        pixToReal x = scale * (x - fromIntegral (w `div` 2))
+
+        -- converts a real y-coordinate to a pixel y-coordinate
+        realToPix :: Double -> Double
+        realToPix y = (-y + (fromIntegral h * scale / 2)) / scale
