@@ -21,13 +21,14 @@ setup window =
      fx      <- mkHTML "<i>f</i>(<i>x</i>)="  -- The text "f(x)="
      input   <- mkInput 20 "x"                -- The formula input
      draw    <- mkButton "Draw graph"         -- The draw button
-     slider  <- mkSlider (1,100) 1      -- The slider
+     slider  <- mkSlider (1,100) 1            -- The slider
+     diff    <- mkButton "Differentiate"      -- The differentiate button
        -- The markup "<i>...</i>" means that the text inside should be rendered
        -- in italics.
 
      -- Add the user interface elements to the page, creating a specific layout
      formula <- row [pure fx,pure input, pure slider]
-     getBody window #+ [column [pure canvas,pure formula,pure draw]]
+     getBody window #+ [column [pure canvas,pure formula,pure draw, pure diff]]
 
      -- Styling
      getBody window # set style [("backgroundColor","lightblue"),
@@ -38,7 +39,11 @@ setup window =
      on UI.click      draw   $ \ _ -> readAndDraw input canvas slider
      on valueChange'  input  $ \ _ -> readAndDraw input canvas slider
      on valueChange'  slider $ \ _ -> readAndDraw input canvas slider
-
+     on UI.click      diff   $ \ _ -> do 
+                                        currentValue <- get value input
+                                        case readExpr currentValue of
+                                            Just expr -> set value (show (differentiate expr)) (pure input)
+                                            Nothing   -> set value currentValue                (pure input)
 
 --H
 points :: Expr -> Double -> (Int,Int) -> [Point]
@@ -73,4 +78,7 @@ readAndDraw input canvas slider = do -- Get the current formula (a String) from 
             UI.fillText (show expr) (10,10) canvas
             path "blue" (points expr scale (canWidth, canHeight)) canvas
         Nothing     -> UI.fillText "Error parsing expression" (10,10) canvas
+
+--J
+-- Implemented in setup and readAndDraw
 
