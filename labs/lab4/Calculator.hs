@@ -21,12 +21,14 @@ setup window =
      fx      <- mkHTML "<i>f</i>(<i>x</i>)="  -- The text "f(x)="
      input   <- mkInput 20 "x"                -- The formula input
      draw    <- mkButton "Draw graph"         -- The draw button
+     slider  <- mkSlider (1,100) 1            -- The slider
+     diff    <- mkButton "Differentiate"      -- The differentiate button
        -- The markup "<i>...</i>" means that the text inside should be rendered
        -- in italics.
 
      -- Add the user interface elements to the page, creating a specific layout
-     formula <- row [pure fx,pure input]
-     getBody window #+ [column [pure canvas,pure formula,pure draw]]
+     formula <- row [pure fx,pure input, pure slider]
+     getBody window #+ [column [pure canvas,pure formula,pure draw, pure diff]]
 
      -- Styling
      getBody window # set style [("backgroundColor","lightblue"),
@@ -34,29 +36,18 @@ setup window =
      pure input # set style [("fontSize","14pt")]
 
      -- Interaction (install event handlers)
-     on UI.click     draw  $ \ _ -> readAndDraw input canvas
-     on valueChange' input $ \ _ -> readAndDraw input canvas
+     on UI.click      draw   $ \ _ -> readAndDraw input canvas slider
+     on valueChange'  input  $ \ _ -> readAndDraw input canvas slider
+     on valueChange'  slider $ \ _ -> readAndDraw input canvas slider
+     on UI.click      diff   $ \ _ -> do 
+                                        currentValue <- get value input
+                                        case readExpr currentValue of
+                                            Just expr -> set value (show (differentiate expr)) (pure input)
+                                            Nothing   -> set value currentValue                (pure input)
+     
 
---I
-readAndDraw :: Element -> Canvas -> UI ()
-readAndDraw input canvas = do -- Get the current formula (a String) from the input element
-    formula <- get value input
-    -- Clear the canvas
-    clearCanvas canvas
-    -- The following code draws the formula text in the canvas and a blue line.
-    -- It should be replaced with code that draws the graph of the function.
-    --  set UI.fillStyle (UI.solidColor (UI.RGB 0 0 0)) (pure canvas)
-    --  UI.fillText formula (10,canHeight/2) canvas
-    set UI.fillStyle (UI.solidColor (UI.RGB 0 0 0)) (pure canvas)
-    path "gray" [(canWidth/2,0),(canWidth/2,canHeight)] canvas
-    path "gray" [(0,canHeight/2),(canWidth, canHeight/2)] canvas
-    case readExpr formula of
-        Just expr -> do
-            UI.fillText (show expr) (10,10) canvas
-            path "blue" (points expr 0.04 (canWidth, canHeight)) canvas
-        Nothing     -> UI.fillText "Error parsing expression" (10,10) canvas
-
-
+     on UI.click      diff   $ \ _ -> readAndDraw input canvas slider
+                        
 --H
 points :: Expr -> Double -> (Int,Int) -> [Point]
 points expr scale (w,h) = zip xs $ map ((fromIntegral . round . realToPix . (expr `eval`)) . pixToReal) xs
@@ -69,3 +60,27 @@ points expr scale (w,h) = zip xs $ map ((fromIntegral . round . realToPix . (exp
         -- converts a real y-coordinate to a pixel y-coordinate
         realToPix :: Double -> Double
         realToPix y = (-y + (fromIntegral h * scale / 2)) / scale
+
+--I
+readAndDraw :: Element -> Canvas -> Element -> UI ()
+readAndDraw input canvas slider = do -- Get the current formula (a String) from the input element
+    formula <- get value input
+    zoom    <- (read :: String -> Double) <$> get value slider
+    let scale = 0.04 - (zoom*0.0003)
+    -- Clear the canvas
+    clearCanvas canvas
+    -- The following code draws the formula text in the canvas and a blue line.
+    -- It should be replaced with code that draws the graph of the function.
+    --  set UI.fillStyle (UI.solidColor (UI.RGB 0 0 0)) (pure canvas)
+    --  UI.fillText formula (10,canHeight/2) canvas
+    path "gray" [(canWidth/2,0),(canWidth/2,canHeight)] canvas
+    path "gray" [(0,canHeight/2),(canWidth, canHeight/2)] canvas
+    case readExpr formula of
+        Just expr -> do
+            UI.fillText (show expr) (10,10) canvas
+            path "blue" (points expr scale (canWidth, canHeight)) canvas
+        Nothing     -> UI.fillText "Error parsing expression" (10,10) canvas
+
+--J
+-- Implemented in setup and readAndDraw
+
