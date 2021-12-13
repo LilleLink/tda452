@@ -55,7 +55,7 @@ setup window =
                         
 --H
 -- | Maps a function onto a range of x-values and returns the values
--- as points, where each point represents the position of a pixel.
+--   as points, where each point represents the position of a pixel.
 points :: Expr -> Double -> (Int,Int) -> [Point]
 points expr scale (w,h) = zip xs $ map 
     ((fromIntegral . round . realToPix . (expr `eval`)) . pixToReal) xs
@@ -71,17 +71,22 @@ points expr scale (w,h) = zip xs $ map
 
 --I
 -- | Reads an expression from the input text element, evaluates it,
--- then draws it on the canvas.
+--   then draws it on the canvas.
 readAndDraw :: Element -> Canvas -> Element -> UI ()
 readAndDraw input canvas slider = do
     formula <- get value input
     zoom    <- (read :: String -> Double) <$> get value slider 
-    let scale = 0.04 - (zoom*0.0003) -- Calculates the scale with respect
-    clearCanvas canvas               -- to the zoom value from the slider.
+
+    -- Calculates the scale with respect to the zoom slider.
+    let scale = 0.04 - (zoom*0.0003) 
+
+    -- Clear canvas and draw x and y axis.
+    clearCanvas canvas           
     path "gray" [(canWidth/2,0),(canWidth/2,canHeight)] canvas
     path "gray" [(0,canHeight/2),(canWidth, canHeight/2)] canvas
+    
     case readExpr formula of
-        Just expr -> do
+        Just expr   -> do
             UI.fillText (show expr) (10,10) canvas
             path "blue" (points expr scale (canWidth, canHeight)) canvas
         Nothing     -> UI.fillText "Error parsing expression" (10,10) canvas

@@ -44,7 +44,7 @@ size (Cos e)     = size e
 
 -- B
 -- | Displays expressions in a nice format,
--- including parentheses where needed.
+--   including parentheses where needed.
 showExpr :: Expr -> String
 showExpr (Num n) = show n
 showExpr X  = "x"
@@ -91,7 +91,7 @@ factor =  Num <$> readsP
       <|> Cos <$> do mapM_ char "cos"; factor
       <|> do char 'x'; return X
 
--- | Reads aand parses an expression from the given string.
+-- | Reads and parses an expression from the given string.
 readExpr :: String -> Maybe Expr
 readExpr str =
     case parse expr (filter (not.isSpace) str) of
@@ -108,12 +108,12 @@ assoc e                    = e
 
 --E
 -- | Property that asserts that showing and parsing
--- does not alter the expression.
+--   does not alter the expression.
 prop_showReadExpr :: Expr -> Bool
 prop_showReadExpr expr = 
     assoc expr == (assoc . fromJust . readExpr . show) expr
 
--- | Definition of how to generate expressions.
+-- | Sized generator for expressions.
 arbExpr :: Int -> Gen Expr
 arbExpr s = frequency [(1,rNum), (1,genX), (s,rBin), (s,rFunc)]
     where
@@ -171,7 +171,8 @@ simplify' e@(Cos (Num a))         = Num $ eval e 0
 simplify'   (Sin e)               = Sin (simplify e)
 simplify'   (Cos e)               = Cos (simplify e)
 
--- | Property which asserts that simplification does not alter the expression
+-- | Property which asserts that simplification
+--   does not alter the expression.
 prop_simplify :: Expr -> Bool
 prop_simplify e = eval e 42 == eval (simplify e) 42
 
