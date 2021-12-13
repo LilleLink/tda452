@@ -5,6 +5,7 @@ import Data.Char (isSpace)
 import Test.QuickCheck
 
 -- A
+-- | A datatype for representing mathematical expressions.
 data Expr
     = Num Double
     | X
@@ -17,6 +18,8 @@ data Expr
 instance Show Expr where
     show = showExpr
 
+
+-- Functions for testing
 x :: Expr
 x = X
 
@@ -40,6 +43,8 @@ size (Sin e)     = size e
 size (Cos e)     = size e
 
 -- B
+-- | Displays expressions in a nice format,
+-- including parentheses where needed.
 showExpr :: Expr -> String
 showExpr (Num n) = show n
 showExpr X  = "x"
@@ -53,12 +58,14 @@ showExpr (Mul e e') =
 showExpr (Sin e) = "sin " ++ showArg e
 showExpr (Cos e) = "cos " ++ showArg e
 
+-- | Helper function for showing function arguments.
 showArg :: Expr -> String
 showArg e@(Num n) = showExpr e
 showArg X         = showExpr X
 showArg e         = "(" ++ showExpr e ++ ")"
 
 -- C
+-- | Evalutes an expression given the value of x.
 eval :: Expr -> Double -> Double
 eval (Num n) _     = n
 eval X       x     = x
