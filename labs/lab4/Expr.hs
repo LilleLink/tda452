@@ -109,8 +109,8 @@ assoc e                    = e
 --E
 -- | Property that asserts that showing and parsing
 --   does not alter the expression.
-prop_showReadExpr :: Expr -> Bool
-prop_showReadExpr expr = 
+prop_ShowReadExpr :: Expr -> Bool
+prop_ShowReadExpr expr = 
     assoc expr == (assoc . fromJust . readExpr . show) expr
 
 -- | Sized generator for expressions.
@@ -146,30 +146,29 @@ simplify e
     | otherwise = simplify simplified
     where 
         simplified = simplify' e
+        simplify'   (Num x)               = Num x
+        simplify'   X                     = X
 
-simplify'   (Num x)               = Num x
-simplify'   X                     = X
+        simplify'   (Add (Num 0) e)       = simplify e
+        simplify'   (Add e (Num 0))       = simplify e
+        simplify' e@(Add (Num a) (Num b)) = Num (a+b)
+        simplify'   (Add e X)             = Add (simplify e) X
+        simplify'   (Add X e)             = Add X (simplify e)
+        simplify'   (Add e1 e2)           = Add (simplify e1) (simplify e2)
 
-simplify'   (Add (Num 0) e)       = simplify e
-simplify'   (Add e (Num 0))       = simplify e
-simplify' e@(Add (Num a) (Num b)) = Num (a+b)
-simplify'   (Add e X)             = Add (simplify e) X
-simplify'   (Add X e)             = Add X (simplify e)
-simplify'   (Add e1 e2)           = Add (simplify e1) (simplify e2)
+        simplify'   (Mul (Num 0) _)       = Num 0
+        simplify'   (Mul _ (Num 0))       = Num 0
+        simplify'   (Mul (Num 1) e)       = simplify e
+        simplify'   (Mul e (Num 1))       = simplify e
+        simplify' e@(Mul (Num a) (Num b)) = Num (a*b)
+        simplify'   (Mul e X)             = Mul X (simplify e)
+        simplify'   (Mul X e)             = Mul X (simplify e)
+        simplify'   (Mul e1 e2)           = Mul (simplify e1) (simplify e2)
 
-simplify'   (Mul (Num 0) _)       = Num 0
-simplify'   (Mul _ (Num 0))       = Num 0
-simplify'   (Mul (Num 1) e)       = simplify e
-simplify'   (Mul e (Num 1))       = simplify e
-simplify' e@(Mul (Num a) (Num b)) = Num (a*b)
-simplify'   (Mul e X)             = Mul X (simplify e)
-simplify'   (Mul X e)             = Mul X (simplify e)
-simplify'   (Mul e1 e2)           = Mul (simplify e1) (simplify e2)
-
-simplify' e@(Sin (Num a))         = Num $ eval e 0
-simplify' e@(Cos (Num a))         = Num $ eval e 0
-simplify'   (Sin e)               = Sin (simplify e)
-simplify'   (Cos e)               = Cos (simplify e)
+        simplify' e@(Sin (Num a))         = Num $ eval e 0
+        simplify' e@(Cos (Num a))         = Num $ eval e 0
+        simplify'   (Sin e)               = Sin (simplify e)
+        simplify'   (Cos e)               = Cos (simplify e)
 
 -- | Property which asserts that simplification
 --   does not alter the expression.
