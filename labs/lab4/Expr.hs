@@ -81,6 +81,7 @@ term   ::= factor {"*" factor}.
 factor ::= number | "(" expr ")".
 -}
 
+-- | Definitions of parsers for expressions, terms and factors.
 expr, term, factor :: Parser Expr
 expr   = foldl1 Add <$> chain term (char '+')
 term   = foldl1 Mul <$> chain factor (char '*')
@@ -90,12 +91,14 @@ factor =  Num <$> readsP
       <|> Cos <$> do mapM_ char "cos"; factor
       <|> do char 'x'; return X
 
+-- | Reads aand parses an expression from the given string.
 readExpr :: String -> Maybe Expr
 readExpr str =
     case parse expr (filter (not.isSpace) str) of
         (Just (e,"")) -> Just e
         _             -> Nothing
 
+-- | Formats the expression accordingly with respect to its associativity.
 assoc :: Expr -> Expr
 assoc (Add (Add e1 e2) e3) = assoc (Add e1 (Add e2 e3))
 assoc (Add e1          e2) = Add (assoc e1) (assoc e2)
@@ -104,10 +107,13 @@ assoc (Mul e1          e2) = Mul (assoc e1) (assoc e2)
 assoc e                    = e
 
 --E
+-- | Property that asserts that showing and parsing
+-- does not alter the expression.
 prop_showReadExpr :: Expr -> Bool
 prop_showReadExpr expr = 
     assoc expr == (assoc . fromJust . readExpr . show) expr
 
+-- | Definition of how to generate expressions
 arbExpr :: Int -> Gen Expr
 arbExpr s = frequency [(1,rNum), (1,genX), (s,rBin), (s,rFunc)]
     where
@@ -133,11 +139,13 @@ instance Arbitrary Expr where
     arbitrary = sized arbExpr
 
 -- F
+-- | Simplifies the given expression.
 simplify :: Expr -> Expr
 simplify e
     | e == simplified = e
     | otherwise = simplify simplified
-    where simplified = simplify' e
+    where 
+        simplified = simplify' e
 
 simplify'   (Num x)               = Num x
 simplify'   X                     = X
@@ -163,16 +171,19 @@ simplify' e@(Cos (Num a))         = Num $ eval e 0
 simplify'   (Sin e)               = Sin (simplify e)
 simplify'   (Cos e)               = Cos (simplify e)
 
+-- | Property which asserts that simplification does not alter the expression
 prop_simplify :: Expr -> Bool
 prop_simplify e = eval e 42 == eval (simplify e) 42
 
 -- G
+-- | Differentiates the given expression with respect to x.
 differentiate :: Expr -> Expr
 differentiate = simplify . diff . simplify
     where
-    diff X           = Num 1
-    diff (Num _)     = Num 0
-    diff (Add e1 e2) = Add (differentiate e1) (differentiate e2)
-    diff (Mul e1 e2) = Add (Mul (differentiate e1) e2) (Mul e1 (differentiate e2))
-    diff (Sin e)     = Mul (differentiate e) (Cos e)
-    diff (Cos e)     = Mul (differentiate e) (Mul (Num (-1)) (Sin e))
+        diff X           = Num 1
+        diff (Num _)     = Num 0
+        diff (Add e1 e2) = Add (differentiate e1) (differentiate e2)
+        diff (Mul e1 e2) = Add (Mul (differentiate e1) e2) 
+                               (Mul e1 (differentiate e2))
+        diff (Sin e)     = Mul (differentiate e) (Cos e)
+        diff (Cos e)     = Mul (differentiate e) (Mul (Num (-1)) (Sin e))

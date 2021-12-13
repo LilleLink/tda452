@@ -23,12 +23,14 @@ setup window =
      draw    <- mkButton "Draw graph"         -- The draw button
      slider  <- mkSlider (1,100) 1            -- The slider
      diff    <- mkButton "Differentiate"      -- The differentiate button
-       -- The markup "<i>...</i>" means that the text inside should be rendered
-       -- in italics.
+    -- The markup "<i>...</i>" means that the text inside should be rendered
+    -- in italics.
 
-     -- Add the user interface elements to the page, creating a specific layout
+     -- Add the user interface elements to the page, creating a 
+     -- specific layout
      formula <- row [pure fx,pure input, pure slider]
-     getBody window #+ [column [pure canvas,pure formula,pure draw, pure diff]]
+     getBody window #+ [column [pure canvas,pure formula,pure draw, 
+                        pure diff]]
 
      -- Styling
      getBody window # set style [("backgroundColor","lightblue"),
@@ -40,17 +42,23 @@ setup window =
      on valueChange'  input  $ \ _ -> readAndDraw input canvas slider
      on valueChange'  slider $ \ _ -> readAndDraw input canvas slider
      on UI.click      diff   $ \ _ -> do 
-                                        currentValue <- get value input
-                                        case readExpr currentValue of
-                                            Just expr -> set value (show (differentiate expr)) (pure input)
-                                            Nothing   -> set value currentValue                (pure input)
+                                currentValue <- get value input
+                                case readExpr currentValue of
+                                    Just expr -> set value 
+                                                (show (differentiate expr))
+                                                (pure input)
+                                    Nothing   -> set value 
+                                                currentValue (pure input)
      
 
      on UI.click      diff   $ \ _ -> readAndDraw input canvas slider
                         
 --H
+-- | Maps a function onto a range of x-values and returns the values
+-- as points, where each point represents the position of a pixel.
 points :: Expr -> Double -> (Int,Int) -> [Point]
-points expr scale (w,h) = zip xs $ map ((fromIntegral . round . realToPix . (expr `eval`)) . pixToReal) xs
+points expr scale (w,h) = zip xs $ map 
+    ((fromIntegral . round . realToPix . (expr `eval`)) . pixToReal) xs
     where
         xs = map fromIntegral [0..w]
         -- converts a pixel x-coordinate to a real x-coordinate
@@ -62,8 +70,10 @@ points expr scale (w,h) = zip xs $ map ((fromIntegral . round . realToPix . (exp
         realToPix y = (-y + (fromIntegral h * scale / 2)) / scale
 
 --I
+-- | Reads an expression from the input text element, evaluates it,
+-- then draws it on the canvas.
 readAndDraw :: Element -> Canvas -> Element -> UI ()
-readAndDraw input canvas slider = do -- Get the current formula (a String) from the input element
+readAndDraw input canvas slider = do
     formula <- get value input
     zoom    <- (read :: String -> Double) <$> get value slider
     let scale = 0.04 - (zoom*0.0003)
