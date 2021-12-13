@@ -86,9 +86,9 @@ expr, term, factor :: Parser Expr
 expr   = foldl1 Add <$> chain term (char '+')
 term   = foldl1 Mul <$> chain factor (char '*')
 factor =  Num <$> readsP
-      <|> char '(' *> expr <* char ')'
       <|> Sin <$> do mapM_ char "sin"; factor
       <|> Cos <$> do mapM_ char "cos"; factor
+      <|> char '(' *> expr <* char ')'
       <|> do char 'x'; return X
 
 -- | Reads and parses an expression from the given string.
@@ -104,6 +104,8 @@ assoc (Add (Add e1 e2) e3) = assoc (Add e1 (Add e2 e3))
 assoc (Add e1          e2) = Add (assoc e1) (assoc e2)
 assoc (Mul (Mul e1 e2) e3) = assoc (Mul e1 (Mul e2 e3))
 assoc (Mul e1          e2) = Mul (assoc e1) (assoc e2)
+assoc (Sin e)              = Sin (assoc e)
+assoc (Cos e)              = Cos (assoc e)
 assoc e                    = e
 
 --E
