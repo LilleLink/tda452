@@ -113,7 +113,7 @@ prop_showReadExpr :: Expr -> Bool
 prop_showReadExpr expr = 
     assoc expr == (assoc . fromJust . readExpr . show) expr
 
--- | Definition of how to generate expressions
+-- | Definition of how to generate expressions.
 arbExpr :: Int -> Gen Expr
 arbExpr s = frequency [(1,rNum), (1,genX), (s,rBin), (s,rFunc)]
     where

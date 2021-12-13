@@ -75,14 +75,9 @@ points expr scale (w,h) = zip xs $ map
 readAndDraw :: Element -> Canvas -> Element -> UI ()
 readAndDraw input canvas slider = do
     formula <- get value input
-    zoom    <- (read :: String -> Double) <$> get value slider
-    let scale = 0.04 - (zoom*0.0003)
-    -- Clear the canvas
-    clearCanvas canvas
-    -- The following code draws the formula text in the canvas and a blue line.
-    -- It should be replaced with code that draws the graph of the function.
-    --  set UI.fillStyle (UI.solidColor (UI.RGB 0 0 0)) (pure canvas)
-    --  UI.fillText formula (10,canHeight/2) canvas
+    zoom    <- (read :: String -> Double) <$> get value slider 
+    let scale = 0.04 - (zoom*0.0003) -- Calculates the scale with respect
+    clearCanvas canvas               -- to the zoom value from the slider.
     path "gray" [(canWidth/2,0),(canWidth/2,canHeight)] canvas
     path "gray" [(0,canHeight/2),(canWidth, canHeight/2)] canvas
     case readExpr formula of
