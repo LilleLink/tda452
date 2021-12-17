@@ -9,7 +9,7 @@ placeInAlphabet ch = pia ch alphabet 1
                             | otherwise = pia ch cs (count+1)
 
 hash :: Char -> Int
-hash c = 11* placeInAlphabet c `mod` 10
+hash c = 11* placeInAlphabet c `mod` 16
 
 main :: IO ()
 main = do
