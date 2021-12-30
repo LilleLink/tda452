@@ -1,7 +1,7 @@
 import Test.QuickCheck ( Arbitrary, elements, arbitrary, sample, Gen, frequency, sized)
 import Control.Monad (replicateM)
 import Data.List (nub)
--- Question 1 --
+-- Question 1 -----------------------------------------------------------------
 trueProps :: [a -> Bool] -> a -> [a -> Bool]
 trueProps ps a = [prop | prop <- ps, prop a]
 
@@ -13,7 +13,7 @@ trueProps' (p:ps) a | p a = p : trueProps' ps a
 trueProps'' :: [a -> Bool] -> a -> [a -> Bool]
 trueProps'' ps a = filter (\p -> p a) ps
 
--- Question 2 --
+-- Question 2 -----------------------------------------------------------------
 data Color = Red | Green | Blue | Yellow
     deriving (Show, Eq)
 
@@ -26,14 +26,14 @@ data WildAttr = Choose | Draw4
 data Uno = Regular Color Int | Special Color Attr | Wild WildAttr
     deriving Show
 
--- Question 3 --
+-- Question 3 -----------------------------------------------------------------
 validCard :: Uno -> Bool
 validCard (Regular c r)    | r >= 0 && r <= 9 = True
                            | otherwise        = False
 validCard (Special c attr) = True
 validCard (Wild wattr)     = True
 
--- Question 4 -- 
+-- Question 4 -----------------------------------------------------------------
 fullDeck :: [Uno]
 fullDeck = [Regular c r | c <- colors, r <- [0..9]] ++
            [Special c attr | c <- colors, attr <- [Skip, Reverse, Draw2]] ++
@@ -41,7 +41,7 @@ fullDeck = [Regular c r | c <- colors, r <- [0..9]] ++
     where
         colors = [Red, Green, Blue, Yellow]
 
--- Question 5 --
+-- Question 5 -----------------------------------------------------------------
 -- | Checks if the first card (first argument) can be put on top of the other
 -- according to uno rules.
 validPlay :: Uno -> Uno -> Bool
@@ -61,15 +61,15 @@ validPlay (Regular c1 r1) (Regular c2 r2)   | c1 == c2 || r1 == r2 = True
 validPlay (Special c1 a1) (Special c2 a2)   | c1 == c2 || a1 == a2 = True
                                             | otherwise = False
 
--- Question 6 --
+-- Question 6 -----------------------------------------------------------------
 validPile :: [Uno] -> Bool
 validPile pile = and $ zipWith validPlay pile (drop 1 pile)
 
--- Question 7 --
+-- Question 7 -----------------------------------------------------------------
 instance Arbitrary Uno where
     arbitrary = do elements fullDeck
 
--- PART 2 --
+-- PART 2 -----------------------------------------------------------------
 type NamedMaze t = (t, Maze t)
 
 data Maze t = Exit | Choice [NamedMaze t]
@@ -87,12 +87,12 @@ woods = ("Woods", Choice [("To Town"     , Exit),
 deadEnd :: Maze t
 deadEnd = Choice []
 
--- Question 8 --
+-- Question 8 -----------------------------------------------------------------
 allExits :: NamedMaze t -> [[t]]
 allExits (s, Exit)      = [[s]]
 allExits (s, Choice ps) = map (s:) $ concatMap allExits ps
 
--- Question 9 --
+-- Question 9 -----------------------------------------------------------------
 data Map = MapExit | DeadEnd | Move (Direction -> Map)
 
 data Direction = LeftFork | Straight | RightFork
@@ -116,7 +116,7 @@ mapToMaze (Move mf) = Choice [(LeftFork, mapToMaze (mf LeftFork)),
 mapToMaze DeadEnd = deadEnd
 mapToMaze MapExit = Exit
 
--- Question 10 --
+-- Question 10 ----------------------------------------------------------------
 instance (Arbitrary t, Eq t) => Arbitrary (Maze t) where
     arbitrary = sized rMaze
 
