@@ -1,3 +1,4 @@
+import Test.QuickCheck (Gen, Arbitrary (arbitrary), frequency, sample, elements, verboseCheck)
 {-- 
 -- Question 1 ----------------------------------------------------------------
 
@@ -146,3 +147,22 @@ cellToPos :: FilledCell -> Pos
 cellToPos (Filled (x,y) _) = (x,y)
 
 --}
+
+{--
+Better solution for the generator, basically no copy paste.
+instance Arbitrary Card where
+    arbitrary = do frequency [(1,rMonster), (1,rTrainer)]
+        where
+            rMonster = do
+                hp <- elements [1..3]
+                species <- elements [Poopachu, Fartle, Blub]
+                kind <- elements $ validKinds species
+                return $ Monster species kind hp
+
+            rTrainer = do
+                hp <- elements [1..5]
+                return $ Trainer hp
+    
+--}
+
+
