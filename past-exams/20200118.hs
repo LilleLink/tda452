@@ -1,4 +1,3 @@
-import Test.QuickCheck (Gen, Arbitrary (arbitrary), frequency, sample, elements, verboseCheck)
 {-- 
 -- Question 1 ----------------------------------------------------------------
 
