@@ -43,4 +43,44 @@ f t1 t2 = ((snd t1, snd t2),(fst t1, fst t2))
 
 -- Chapter 7 Exercises --
 
+-- 3. f :: Ord a => a -> a -> Bool
+-- we apply it to a numeric value
+-- type now:
+-- (Ord a, Num a) => a -> Bool
+
+f' :: Ord a => a -> a -> Bool
+f' a1 a2 = a2 > a1
+
+f'' :: a -> a
+f'' a = a
+
+-- Let's write code 
+
+tensDigit :: Integral a => a -> a
+tensDigit x = d
+      where (xLast, _) = x `divMod` 10
+            (_, d) = xLast `divMod` 10
+
+hunsDigit x = d
+    where (xLast,_) = x `divMod` 100
+          (_,d) = xLast `divMod` 10
+
+foldBool :: a -> a -> Bool -> a
+foldBool x y b = case b of 
+                      True -> x
+                      False -> y
+
+foldBool' :: a -> a -> Bool -> a
+foldBool' x y b | b == True = x
+                | otherwise = y
+
+g :: (a -> b) -> (a, c) -> (b, c)
+g f (a, c) = (f a, c)
+
+-- Chapter 8 Exercises --
+
+func :: [a] -> [a] -> [a]
+func x y = x ++ y
+
+
 
