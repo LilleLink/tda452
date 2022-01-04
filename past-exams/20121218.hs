@@ -139,7 +139,37 @@ here (Map s _) = s
 
 -- Question 4 --
 
+a:
+Write without do notation
+backup f = do
+    a <- readFile f
+    let backup = f ++ ".bac"
+    putStrLn $ "Creating backup in " ++ backup
+    writeFile backup a
+
+backup' :: FilePath -> IO ()
+backup' f = readFile f >>= \ a ->
+            let backup = f ++ ".bac" in
+            putStrLn ("Creating backup in " ++ backup) >> 
+            writeFile backup a
+
+b:
+for_ :: [a] -> (a -> IO()) -> IO ()
+for_ as f = mapM_ f as
+-- mapM_ = sequence_ . map
+
+c:
+for :: [a] -> (a -> IO b) -> IO [b]
+for as f = mapM f as
+-- mapM = sequence . map
+
+d:
+join :: FilePath -> Int -> IO ()
+join file i = do
+    let files = [file ++ ".part" ++ (show n) | n <- [1..i]]
+    content <- for files (\fp -> readFile fp)
+    writeFile file (concat content)
+
 
 --}
-
 
