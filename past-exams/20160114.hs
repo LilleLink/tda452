@@ -123,6 +123,10 @@ allPaths (Node n Leaf Leaf) = [[n]]
 allPaths (Leaf)             = []
 allPaths (Node n t1 t2)     = map (n:) (allPaths t1 ++ allPaths t2)
 
+allPaths' :: Tree a -> [[a]]
+allPaths' Leaf = [] -- wont map anything here, no duplicates
+allPaths' (Node n t1 t2) = map (n:) (allPaths t1 ++ allPaths t2)
+
 c:
 balTree :: Gen (Tree Bool)
 balTree = sized bTree
