@@ -1,6 +1,3 @@
-{-# LANGUAGE FlexibleInstances #-}
-import Data.List (intersperse)
-import Test.QuickCheck (Gen, Arbitrary (arbitrary), elements, sample, sized, quickCheck)
 {--
 
 -- Question 1 --
