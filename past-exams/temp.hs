@@ -1,5 +1,6 @@
 import Test.QuickCheck
 data Grid a = Grid [[a]]
+    deriving Show
 
 grids :: Arbitrary a => Gen (Grid a)
 grids = do

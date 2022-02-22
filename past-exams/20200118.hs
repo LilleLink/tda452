@@ -3,7 +3,7 @@
 
 a:
 fa :: [String] -> String
-fb :: [a] -> (a,a,a)
+fb :: [a] -> (a,a,[a])
 fc :: Ord a => a -> a -> [Bool] -> Bool
 fd :: IO String -> IO ()
 
